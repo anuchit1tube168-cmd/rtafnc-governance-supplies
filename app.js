@@ -517,9 +517,10 @@ function handleRequisitionSubmit() {
       </head>
       <body>
         <div class="header-box">
-          <h3>วิทยาลัยพยาบาลทหารอากาศ กรมแพทย์ทหารอากาศ</h3>
-          <h2>ใบขอเบิก-ยืมพัสดุปกครอง (Logistics Mission Slip)</h2>
-          <p style="font-size: 13px; margin-top: 5px;">ระบบควบคุมพัสดุปกครอง ๑ ๒ ๓ ปีการศึกษา ๒๕๖๙</p>
+          <img src="images/logo_rtafnc.png" alt="ตราสัญลักษณ์ วพอ." style="width: 72px; height: 72px; object-fit: contain; margin-bottom: 8px;">
+          <h3 style="margin: 3px 0; font-size: 15px;">วิทยาลัยพยาบาลทหารอากาศ กรมแพทย์ทหารอากาศ</h3>
+          <h2 style="margin: 4px 0; font-size: 19px; color: #1F3864;">ใบขอเบิก-ยืมพัสดุปกครอง (Logistics Mission Slip)</h2>
+          <p style="font-size: 13px; margin-top: 4px; color: #4B5563;">ระบบควบคุมพัสดุปกครอง ๑ ๒ ๓ ปีการศึกษา ๒๕๖๙</p>
         </div>
 
         <p><strong>วันที่ทำรายการ:</strong> ${dateStr} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>เลขที่ใบเบิก:</strong> REQ-${Date.now().toString().slice(-6)}</p>
