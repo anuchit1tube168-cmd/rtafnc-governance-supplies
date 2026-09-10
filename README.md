@@ -1,7 +1,11 @@
 # ระบบบริหารจัดการพัสดุปกครอง ๑ ๒ ๓ (RTAFNC Supplies Inventory)
 ### แผนกปกครอง วิทยาลัยพยาบาลทหารอากาศ กรมแพทย์ทหารอากาศ
 
-ระบบฐานข้อมูล บริหารจัดการ และตรวจสอบยอดคงคลังพัสดุปกครอง วพอ. ปีการศึกษา ๒๕๖๙ ครอบคลุม ๑๗๕ รายการ (๑,๕๒๔ หน่วย) พร้อมภาพถ่ายจริงของพัสดุทุกรายการ และเชื่อมต่อกับ Google Drive / RTAFNC ONE
+[![GitHub Repository](https://img.shields.io/badge/GitHub-rtafnc--governance--supplies-blue?logo=github)](https://github.com/anuchit1tube168-cmd/rtafnc-governance-supplies)
+[![Google Drive](https://img.shields.io/badge/Google%20Drive-Connected-green?logo=google-drive)](https://drive.google.com/)
+[![Status](https://img.shields.io/badge/Status-VERIFIED__CURRENT-brightgreen)](#)
+
+ระบบฐานข้อมูล บริหารจัดการ และตรวจสอบยอดคงคลังพัสดุปกครอง วพอ. ปีการศึกษา ๒๕๖๙ ครอบคลุม ๑๗๕ รายการ (๑,๕๒๔ หน่วย) พร้อมภาพถ่ายจริงของพัสดุทุกรายการ และเชื่อมต่อแบบ Two-Way กับ Google Drive / RTAFNC ONE
 
 ---
 
@@ -26,11 +30,31 @@
 
 ### วิธีที่ ๒: รันผ่าน Python
 ```bash
-python3 -m http.server 8080 --directory web
+python3 -m http.server 8080
 ```
 
-### วิธีที่ ๓: เปิดไฟล์ตรงผ่านเบราว์เซอร์
-เปิดไฟล์ `web/index.html` ผ่าน Google Chrome หรือ Safari
+### วิธีที่ ๓: เปิดผ่าน NPM
+```bash
+npm start
+```
+
+---
+
+## ☁️ การเชื่อมต่อและซิงค์ข้อมูลกับ Google Drive
+
+ซิงค์ฐานข้อมูล Excel และ JSON เข้า Google Drive อัตโนมัติด้วยคำสั่งเดียว:
+```bash
+python3 sync_google_drive.py
+# หรือ
+npm run sync
+```
+
+**โฟลเดอร์ Google Drive ที่เชื่อมต่อ (บัญชี anuchit1tube168@gmail.com):**
+1. **`คลังพัสดุnew69`**:
+   - `พัสดุปกครอง_๑๒๓_ระบบสมบูรณ์_OBE.xlsx`
+   - `rtafnc_one_gov_supplies_import_payload.json`
+2. **`RTAFNC_ONE_PROJECT_CLONES_2569/04_GOVERNANCE_SUPPLIES`**:
+   - เชื่อมต่อกับระบบ RTAFNC ONE Master Data
 
 ---
 
@@ -45,17 +69,19 @@ python3 -m http.server 8080 --directory web
 
 ---
 
-## 📂 ไฟล์ในโครงการ
+## 📂 โครงสร้างไฟล์ในโครงการ
 
-- `web/`: โฟลเดอร์หน้าเว็บแอปพลิเคชัน (`index.html`, `style.css`, `app.js`, `data.json`, `images/`)
-- `พัสดุปกครอง_๑๒๓_ระบบสมบูรณ์_OBE.xlsx`: ไฟล์ Excel สมบูรณ์ ๕ ชีต (สรุปสถิติ, หมวด ๑, หมวด ๒, หมวด ๓, Data_All_Items)
-- `rtafnc_one_gov_supplies_import_payload.json`: ชุดข้อมูล Payload มาตรฐานสำหรับนำเข้าสู่ระบบ RTAFNC ONE
-- `build_system.py`: สคริปต์สกัดรูปภาพและประมวลผลฐานข้อมูล
-- `start_server.sh`: สคริปต์เปิดเว็บแอปพลิเคชัน
-
----
-
-## ☁️ การเชื่อมโยง Google Drive
-ไฟล์ข้อมูลและโครงสร้างได้รับการซิงค์ไปยัง Google Drive (บัญชี `anuchit1tube168@gmail.com`):
-- `คลังพัสดุnew69/พัสดุปกครอง_๑๒๓_ระบบสมบูรณ์_OBE.xlsx`
-- `RTAFNC_ONE_PROJECT_CLONES_2569/04_GOVERNANCE_SUPPLIES/`
+```
+.
+├── index.html                                    # หน้าเว็บหลัก Web Application
+├── style.css                                     # สไตล์ชีต Responsive ธีมทหารอากาศ
+├── app.js                                        # ระบบการค้นหา ตัวกรอง และใบขอเบิก
+├── data.json                                     # ฐานข้อมูลพัสดุ ๑๗๕ รายการ
+├── images/                                       # ภาพถ่ายพัสดุจริง ๑๗๕ ภาพ
+├── พัสดุปกครอง_๑๒๓_ระบบสมบูรณ์_OBE.xlsx          # ฐานข้อมูล Excel ๕ ชีต
+├── rtafnc_one_gov_supplies_import_payload.json   # JSON Data Contract สำหรับ RTAFNC ONE
+├── sync_google_drive.py                          # เครื่องมือซิงค์ข้อมูล Google Drive
+├── start_server.sh                               # สคริปต์เปิดเว็บเซิร์ฟเวอร์
+├── build_system.py                               # สคริปต์สกัดรูปและสร้างชุดข้อมูล
+└── package.json                                  # NPM Configuration
+```

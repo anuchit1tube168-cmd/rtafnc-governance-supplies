@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "ระบบบริหารจัดการพัสดุปกครอง ๑ ๒ ๓ — วิทยาลัยพยาบาลทหารอากาศ กรมแพทย์ทหารอากาศ",
   "scripts": {
-    "start": "python3 -m http.server 8080 --directory web",
+    "start": "python3 -m http.server 8080",
+    "sync": "python3 sync_google_drive.py",
     "build": "python3 build_system.py"
   },
   "keywords": [
