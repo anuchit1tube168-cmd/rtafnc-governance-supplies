@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบบริหารจัดการพัสดุปกครอง ๑ ๒ ๓ — วพอ.พอ.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-container">
+      <div class="brand-section">
+        <div class="emblem-icon">วพอ.</div>
+        <div class="brand-text">
+          <h1>ระบบพัสดุปกครอง ๑ ๒ ๓ <span style="font-size: 0.85rem; font-weight: normal; background: rgba(212,175,55,0.25); color: #FDE047; padding: 2px 8px; border-radius: 6px; border: 1px solid rgba(212,175,55,0.4);">RTAFNC ONE</span></h1>
+          <p>แผนกปกครอง วิทยาลัยพยาบาลทหารอากาศ กรมแพทย์ทหารอากาศ</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="status-badge">
+          <span class="status-dot"></span>
+          <span>Google Drive เชื่อมต่อแล้ว</span>
+        </div>
+        <a href="พัสดุปกครอง_๑๒๓_ระบบสมบูรณ์_OBE.xlsx" download class="btn btn-primary">
+          <span>📥</span> ดาวน์โหลด Excel
+        </a>
+        <button id="btnOpenCart" class="btn btn-cart">
+          <span>📋 ใบเบิก-ยืม</span>
+          <span id="cartBadge" class="cart-count">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-container">
+
+    <!-- KPI Summary Grid -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-info">
+          <h4>พัสดุทั้งหมดในคลัง</h4>
+          <div class="number" id="kpiTotalCount">175</div>
+          <div class="sub-text">รวมทุกหมวดหมู่ (พร้อมตรวจนับ)</div>
+        </div>
+        <div class="kpi-icon kpi-all">📦</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-info">
+          <h4>พัสดุปกครอง ๑</h4>
+          <div class="number" id="kpiCat1Count">32</div>
+          <div class="sub-text">เครื่องแบบและของใช้ นพอ.</div>
+        </div>
+        <div class="kpi-icon kpi-cat1">🪖</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-info">
+          <h4>พัสดุปกครอง ๒</h4>
+          <div class="number" id="kpiCat2Count">70</div>
+          <div class="sub-text">อุปกรณ์พิธีการและศาสนพิธี</div>
+        </div>
+        <div class="kpi-icon kpi-cat2">🏆</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-info">
+          <h4>พัสดุปกครอง ๓</h4>
+          <div class="number" id="kpiCat3Count">73</div>
+          <div class="sub-text">ฝึกสนาม / กิจกรรม / สูทกรรม</div>
+        </div>
+        <div class="kpi-icon kpi-cat3">⛺</div>
+      </div>
+    </section>
+
+    <!-- Control Bar -->
+    <section class="control-bar">
+      <!-- Tabs -->
+      <div class="tabs-container">
+        <button class="tab-btn active" data-category="0">
+          ทั้งหมด <span class="tab-badge" id="badgeAll">175</span>
+        </button>
+        <button class="tab-btn" data-category="1">
+          พัสดุปกครอง ๑ (เครื่องแบบ/ของใช้) <span class="tab-badge" id="badgeCat1">32</span>
+        </button>
+        <button class="tab-btn" data-category="2">
+          พัสดุปกครอง ๒ (พิธีการ/ศาสนพิธี) <span class="tab-badge" id="badgeCat2">70</span>
+        </button>
+        <button class="tab-btn" data-category="3">
+          พัสดุปกครอง ๓ (ฝึกสนาม/จัดเลี้ยง) <span class="tab-badge" id="badgeCat3">73</span>
+        </button>
+      </div>
+
+      <!-- Search & View Mode -->
+      <div class="filters-row">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" class="search-input" placeholder="ค้นหาชื่อพัสดุ หรือรหัส เช่น รองเท้า, ขันเงิน, โต๊ะหมู่, GOV-APP-001...">
+        </div>
+
+        <div class="view-controls">
+          <span id="resultCountLabel" style="font-size: 0.88rem; color: var(--text-muted);">กำลังโหลด...</span>
+          <div class="view-toggle">
+            <button id="btnViewGrid" class="view-btn active">▦ ตารางการ์ด</button>
+            <button id="btnViewTable" class="view-btn">☰ รายการตาราง</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dynamic Content Area -->
+    <section id="itemsContainer">
+      <div class="empty-state">
+        <p>กำลังโหลดข้อมูลพัสดุ...</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Image & Detail Modal -->
+  <div id="itemModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <span id="modalItemCode" style="font-size: 0.8rem; font-weight: bold; color: var(--text-muted);">GOV-001</span>
+          <h3 id="modalItemName" style="font-size: 1.25rem; font-weight: 700; color: var(--primary);">ชื่อสิ่งของ</h3>
+        </div>
+        <button id="modalCloseBtn" class="modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="modalImgWrapper" class="modal-img-wrapper"></div>
+        <div style="background: #F8FAFC; padding: 1rem; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 1rem;">
+          <p style="margin-bottom: 0.4rem;"><strong>หมวดหมู่:</strong> <span id="modalCategory">-</span></p>
+          <p style="margin-bottom: 0.4rem;"><strong>จำนวนคงคลัง:</strong> <span id="modalQty" style="color: var(--primary); font-weight: bold; font-size: 1.1rem;">-</span></p>
+          <p style="margin-bottom: 0.4rem;"><strong>สถานที่จัดเก็บ:</strong> <span id="modalLocation">-</span></p>
+          <p><strong>สถานะความพร้อม:</strong> <span id="modalStatus" style="color: #10B981; font-weight: 600;">-</span></p>
+        </div>
+        <button id="modalAddToCartBtn" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 0.75rem;">
+          + เพิ่มลงในรายการเบิก-ยืม
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Requisition Cart Drawer -->
+  <div id="cartOverlay" class="modal-overlay"></div>
+  <aside id="cartDrawer" class="cart-drawer">
+    <div class="cart-header">
+      <h3>📋 รายการเบิก-ยืมพัสดุ</h3>
+      <button id="btnCloseCart" style="background: none; border: none; color: #FFF; font-size: 1.3rem; cursor: pointer;">✕</button>
+    </div>
+    <div id="cartItemsList" class="cart-items-list">
+      <!-- Injected by app.js -->
+    </div>
+    <div class="cart-footer">
+      <button id="btnSubmitRequisition" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 0.75rem; font-size: 1rem;">
+        🖨️ ยืนยันและพิมพ์ใบเบิก-ยืม
+      </button>
+    </div>
+  </aside>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>ระบบบริหารจัดการพัสดุปกครอง ๑ ๒ ๓ — แผนกปกครอง วิทยาลัยพยาบาลทหารอากาศ กรมแพทย์ทหารอากาศ</p>
+    <p style="margin-top: 0.3rem; font-size: 0.78rem; opacity: 0.8;">ซิงค์ฐานข้อมูล Master กับ Google Drive (คลังพัสดุnew69 & RTAFNC ONE AY2569) สมบูรณ์ ๑๐๐%</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

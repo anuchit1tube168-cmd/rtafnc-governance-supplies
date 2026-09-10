@@ -1,0 +1,18 @@
+{
+  "name": "rtafnc-governance-supplies",
+  "version": "1.0.0",
+  "description": "ระบบบริหารจัดการพัสดุปกครอง ๑ ๒ ๓ — วิทยาลัยพยาบาลทหารอากาศ กรมแพทย์ทหารอากาศ",
+  "scripts": {
+    "start": "python3 -m http.server 8080 --directory web",
+    "build": "python3 build_system.py"
+  },
+  "keywords": [
+    "rtafnc",
+    "supplies",
+    "inventory",
+    "obe",
+    "military"
+  ],
+  "author": "แผนกปกครอง วิทยาลัยพยาบาลทหารอากาศ",
+  "license": "ISC"
+}
