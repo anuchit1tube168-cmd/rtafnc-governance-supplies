@@ -2,174 +2,329 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ระบบบริหารจัดการพัสดุปกครอง ๑ ๒ ๓ — วพอ.พอ.</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>RTAFNC Supplies Light Mission Control — แผนกปกครอง วพอ.พอ.</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- Header -->
-  <header class="header">
-    <div class="header-container">
-      <div class="brand-section">
-        <div class="emblem-icon">วพอ.</div>
-        <div class="brand-text">
-          <h1>ระบบพัสดุปกครอง ๑ ๒ ๓ <span style="font-size: 0.85rem; font-weight: normal; background: rgba(212,175,55,0.25); color: #FDE047; padding: 2px 8px; border-radius: 6px; border: 1px solid rgba(212,175,55,0.4);">RTAFNC ONE</span></h1>
+  <!-- Top Header / Mission Bar -->
+  <header class="mission-header">
+    <div class="mission-header-container">
+      <div class="brand-wrapper">
+        <div class="brand-emblem">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FFE27A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"/>
+            <path d="M12 7v10M7 12h10" stroke="#FFE27A" stroke-width="1.8"/>
+          </svg>
+        </div>
+        <div class="brand-titles">
+          <h1>
+            พัสดุปกครอง ๑ ๒ ๓
+            <span class="mission-tag">Light Mission Control</span>
+          </h1>
           <p>แผนกปกครอง วิทยาลัยพยาบาลทหารอากาศ กรมแพทย์ทหารอากาศ</p>
         </div>
       </div>
 
-      <div class="header-actions">
-        <div class="status-badge">
-          <span class="status-dot"></span>
-          <span>Google Drive เชื่อมต่อแล้ว</span>
+      <div class="header-action-group">
+        <div class="status-radar-pill">
+          <span class="status-ping"></span>
+          <span>Google Drive ซิงค์เรียบร้อย</span>
         </div>
-        <a href="พัสดุปกครอง_๑๒๓_ระบบสมบูรณ์_OBE.xlsx" download class="btn btn-primary">
-          <span>📥</span> ดาวน์โหลด Excel
+        <a href="พัสดุปกครอง_๑๒๓_ระบบสมบูรณ์_OBE.xlsx" download class="btn-interactive btn-gold">
+          <span>📥</span> <span>ดาวน์โหลด Excel</span>
         </a>
-        <button id="btnOpenCart" class="btn btn-cart">
-          <span>📋 ใบเบิก-ยืม</span>
-          <span id="cartBadge" class="cart-count">0</span>
+        <button id="btnOpenMissionCart" class="btn-interactive btn-navy cart-btn">
+          <span>📋 ภารกิจขอเบิก</span>
+          <span id="cartCounterPill" class="cart-badge-pill">0</span>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- Main Container -->
-  <main class="main-container">
+  <!-- Main Content Stage -->
+  <main class="mission-main-content">
 
-    <!-- KPI Summary Grid -->
-    <section class="kpi-grid">
-      <div class="kpi-card">
-        <div class="kpi-info">
-          <h4>พัสดุทั้งหมดในคลัง</h4>
-          <div class="number" id="kpiTotalCount">175</div>
-          <div class="sub-text">รวมทุกหมวดหมู่ (พร้อมตรวจนับ)</div>
-        </div>
-        <div class="kpi-icon kpi-all">📦</div>
+    <!-- Hero Mission Card -->
+    <section class="mission-hero-card">
+      <svg class="hero-backdrop-wings" viewBox="0 0 24 24" fill="none" stroke="#1F3864" stroke-width="1">
+        <path d="M12 3c-4 4-8 5-11 5 1 5 4 9 11 13 7-4 10-8 11-13-3 0-7-1-11-5z"/>
+      </svg>
+      <div class="hero-motto">
+        <h2>“ทุกพัสดุ พร้อมสนับสนุนทุกภารกิจพยาบาลทหารอากาศ”</h2>
+        <p>ระบบตรวจนับ ยอดคงคลัง และควบคุมการเบิก-ยืมพัสดุปกครอง วพอ. ปีการศึกษา ๒๕๖๙</p>
       </div>
-
-      <div class="kpi-card">
-        <div class="kpi-info">
-          <h4>พัสดุปกครอง ๑</h4>
-          <div class="number" id="kpiCat1Count">32</div>
-          <div class="sub-text">เครื่องแบบและของใช้ นพอ.</div>
+      <div class="commander-profile">
+        <div class="profile-avatar">ผปค.</div>
+        <div class="profile-info">
+          <h4>ร.อ.อนุชิต ทำจะดี</h4>
+          <span>ผปค.วพอ.พอ. — ผู้ดูแลระบบพัสดุ</span>
         </div>
-        <div class="kpi-icon kpi-cat1">🪖</div>
-      </div>
-
-      <div class="kpi-card">
-        <div class="kpi-info">
-          <h4>พัสดุปกครอง ๒</h4>
-          <div class="number" id="kpiCat2Count">70</div>
-          <div class="sub-text">อุปกรณ์พิธีการและศาสนพิธี</div>
-        </div>
-        <div class="kpi-icon kpi-cat2">🏆</div>
-      </div>
-
-      <div class="kpi-card">
-        <div class="kpi-info">
-          <h4>พัสดุปกครอง ๓</h4>
-          <div class="number" id="kpiCat3Count">73</div>
-          <div class="sub-text">ฝึกสนาม / กิจกรรม / สูทกรรม</div>
-        </div>
-        <div class="kpi-icon kpi-cat3">⛺</div>
       </div>
     </section>
 
-    <!-- Control Bar -->
-    <section class="control-bar">
+    <!-- Mission Insights Grid (Radar / Timeline / Readiness) -->
+    <section class="mission-insight-row">
+      
+      <!-- 1. Good Deed / Supply Radar -->
+      <div class="insight-card">
+        <div class="card-header-label">
+          <h3>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0284C7" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 2a10 10 0 0 1 10 10"/>
+              <path d="M12 12l4-4"/>
+            </svg>
+            เรดาร์ความพร้อมพัสดุ (Supply Radar)
+          </h3>
+          <span class="sub-pill">Real-time</span>
+        </div>
+        <div class="radar-chart-container">
+          <svg id="radarSvg" class="radar-svg" viewBox="0 0 250 200">
+            <!-- Background Polygons -->
+            <polygon points="125,25 196,77 169,161 81,161 54,77" fill="none" stroke="#E2E8F0" stroke-width="1"/>
+            <polygon points="125,48 174,84 155,143 95,143 76,84" fill="none" stroke="#E2E8F0" stroke-width="1" stroke-dasharray="3,3"/>
+            <polygon points="125,70 152,90 141,124 109,124 98,90" fill="none" stroke="#E2E8F0" stroke-width="1"/>
+            
+            <!-- Axis lines -->
+            <line x1="125" y1="100" x2="125" y2="25" stroke="#CBD5E1" stroke-width="1"/>
+            <line x1="125" y1="100" x2="196" y2="77" stroke="#CBD5E1" stroke-width="1"/>
+            <line x1="125" y1="100" x2="169" y2="161" stroke="#CBD5E1" stroke-width="1"/>
+            <line x1="125" y1="100" x2="81" y2="161" stroke="#CBD5E1" stroke-width="1"/>
+            <line x1="125" y1="100" x2="54" y2="77" stroke="#CBD5E1" stroke-width="1"/>
+
+            <!-- Dynamic Active Radar Shape -->
+            <polygon id="radarPolygon" class="radar-polygon" points="125,35 188,78 160,154 85,158 60,80"/>
+          </svg>
+          <div class="radar-legend">
+            <div class="legend-item"><span class="legend-dot" style="background:#0284C7;"></span> เครื่องแบบ นพอ. (หมวด ๑)</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#C65911;"></span> อุปกรณ์พิธีการ (หมวด ๒)</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#375623;"></span> อุปกรณ์สนาม (หมวด ๓)</div>
+            <div class="legend-item"><span class="legend-dot" style="background:#10B981;"></span> ความพร้อมจ่าย ๑๐๐%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Logistics Mission Timeline -->
+      <div class="insight-card">
+        <div class="card-header-label">
+          <h3>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1F3864" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            ไทม์ไลน์ภารกิจพัสดุ (Mission Flow)
+          </h3>
+          <span class="sub-pill">ขั้นตอนปฏิบัติ</span>
+        </div>
+        <div class="timeline-list">
+          <div class="timeline-step">
+            <div class="step-marker done">✓</div>
+            <div class="step-content">
+              <h5>๑. ตรวจนับคงคลังจริง</h5>
+              <p>ยืนยัน ๑๗๕ รายการ ๑,๕๒๔ หน่วยนับ</p>
+            </div>
+          </div>
+          <div class="timeline-step">
+            <div class="step-marker done">✓</div>
+            <div class="step-content">
+              <h5>๒. แยก ๓ หมวดหมู่มาตรฐาน</h5>
+              <p>เครื่องแบบ / พิธีการ / ฝึกสนามและสูทกรรม</p>
+            </div>
+          </div>
+          <div class="timeline-step">
+            <div class="step-marker done">✓</div>
+            <div class="step-content">
+              <h5>๓. เชื่อมต่อ Google Drive</h5>
+              <p>คลังพัสดุnew69 & RTAFNC ONE สมบูรณ์</p>
+            </div>
+          </div>
+          <div class="timeline-step">
+            <div class="step-marker active">⚡</div>
+            <div class="step-content">
+              <h5>๔. ระบบเบิก-ยืมพร้อมใช้งาน</h5>
+              <p>สร้างใบเบิกพิมพ์พร้อมช่องลงนามทางการ</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Readiness Meters -->
+      <div class="insight-card">
+        <div class="card-header-label">
+          <h3>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="2">
+              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+            ดัชนีความพร้อมจ่าย (Readiness)
+          </h3>
+          <span class="sub-pill">๑๐๐% พร้อม</span>
+        </div>
+        <div class="meter-grid">
+          <div class="meter-item">
+            <div class="meter-labels">
+              <span>ความพร้อมรวมทั้งสิ้น</span>
+              <span style="color:#0284C7;">๑๗๕ / ๑๗๕ รายการ</span>
+            </div>
+            <div class="meter-bar-track">
+              <div id="meterAllFill" class="meter-bar-fill" style="width: 100%; background: #0284C7;"></div>
+            </div>
+          </div>
+          <div class="meter-item">
+            <div class="meter-labels">
+              <span>พัสดุปกครอง ๑ (เครื่องแบบ/ของใช้)</span>
+              <span style="color:#2E75B6;">๓๒ รายการ</span>
+            </div>
+            <div class="meter-bar-track">
+              <div id="meterC1Fill" class="meter-bar-fill" style="width: 100%; background: #2E75B6;"></div>
+            </div>
+          </div>
+          <div class="meter-item">
+            <div class="meter-labels">
+              <span>พัสดุปกครอง ๒ (พิธีการ/ศาสนพิธี)</span>
+              <span style="color:#C65911;">๗๐ รายการ</span>
+            </div>
+            <div class="meter-bar-track">
+              <div id="meterC2Fill" class="meter-bar-fill" style="width: 100%; background: #C65911;"></div>
+            </div>
+          </div>
+          <div class="meter-item">
+            <div class="meter-labels">
+              <span>พัสดุปกครอง ๓ (ฝึกสนาม/จัดเลี้ยง)</span>
+              <span style="color:#375623;">๗๓ รายการ</span>
+            </div>
+            <div class="meter-bar-track">
+              <div id="meterC3Fill" class="meter-bar-fill" style="width: 100%; background: #375623;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Control Center & Filter Dock -->
+    <section class="control-hub">
       <!-- Tabs -->
-      <div class="tabs-container">
-        <button class="tab-btn active" data-category="0">
-          ทั้งหมด <span class="tab-badge" id="badgeAll">175</span>
+      <div class="tabs-track">
+        <button class="mission-tab-btn active" data-category="0">
+          <span>📦 พัสดุทั้งหมด</span>
+          <span class="tab-counter" id="badgeAll">175</span>
         </button>
-        <button class="tab-btn" data-category="1">
-          พัสดุปกครอง ๑ (เครื่องแบบ/ของใช้) <span class="tab-badge" id="badgeCat1">32</span>
+        <button class="mission-tab-btn" data-category="1">
+          <span>🪖 พัสดุปกครอง ๑ (เครื่องแบบ/ของใช้)</span>
+          <span class="tab-counter" id="badgeCat1">32</span>
         </button>
-        <button class="tab-btn" data-category="2">
-          พัสดุปกครอง ๒ (พิธีการ/ศาสนพิธี) <span class="tab-badge" id="badgeCat2">70</span>
+        <button class="mission-tab-btn" data-category="2">
+          <span>🏆 พัสดุปกครอง ๒ (พิธีการ/ศาสนพิธี)</span>
+          <span class="tab-counter" id="badgeCat2">70</span>
         </button>
-        <button class="tab-btn" data-category="3">
-          พัสดุปกครอง ๓ (ฝึกสนาม/จัดเลี้ยง) <span class="tab-badge" id="badgeCat3">73</span>
+        <button class="mission-tab-btn" data-category="3">
+          <span>⛺ พัสดุปกครอง ๓ (ฝึกสนาม/จัดเลี้ยง)</span>
+          <span class="tab-counter" id="badgeCat3">73</span>
         </button>
       </div>
 
-      <!-- Search & View Mode -->
-      <div class="filters-row">
-        <div class="search-box">
-          <span class="search-icon">🔍</span>
-          <input type="text" id="searchInput" class="search-input" placeholder="ค้นหาชื่อพัสดุ หรือรหัส เช่น รองเท้า, ขันเงิน, โต๊ะหมู่, GOV-APP-001...">
+      <!-- Search & Controls -->
+      <div class="search-filter-dock">
+        <div class="search-input-wrapper">
+          <span class="search-lens-icon">🔍</span>
+          <input type="text" id="missionSearchInput" class="mission-search-input" placeholder="ค้นหาชื่อพัสดุ หรือรหัส เช่น รองเท้า, ขันเงิน, โต๊ะหมู่, GOV-APP-001...">
         </div>
 
-        <div class="view-controls">
-          <span id="resultCountLabel" style="font-size: 0.88rem; color: var(--text-muted);">กำลังโหลด...</span>
-          <div class="view-toggle">
-            <button id="btnViewGrid" class="view-btn active">▦ ตารางการ์ด</button>
-            <button id="btnViewTable" class="view-btn">☰ รายการตาราง</button>
+        <div class="dock-actions">
+          <span id="activeFilterCount" style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">กำลังโหลด...</span>
+          <div class="view-mode-selector">
+            <button id="btnModeGrid" class="mode-btn active" title="มุมมองการ์ดภาพถ่าย">▦ ตารางการ์ด</button>
+            <button id="btnModeTable" class="mode-btn" title="มุมมองตารางข้อมูล">☰ รายการตาราง</button>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Dynamic Content Area -->
+    <!-- Dynamic Items Container -->
     <section id="itemsContainer">
-      <div class="empty-state">
-        <p>กำลังโหลดข้อมูลพัสดุ...</p>
+      <div style="text-align: center; padding: 3rem; background: #FFF; border-radius: 20px;">
+        <p style="color: #64748B;">กำลังโหลดระบบพัสดุปกครอง...</p>
       </div>
     </section>
 
   </main>
 
-  <!-- Image & Detail Modal -->
-  <div id="itemModal" class="modal-overlay">
-    <div class="modal-card">
-      <div class="modal-header">
+  <!-- Modal Dialog (Inspect Item) -->
+  <div id="itemModalDialog" class="dialog-scrim">
+    <div class="dialog-frame">
+      <div class="dialog-top-bar">
         <div>
-          <span id="modalItemCode" style="font-size: 0.8rem; font-weight: bold; color: var(--text-muted);">GOV-001</span>
-          <h3 id="modalItemName" style="font-size: 1.25rem; font-weight: 700; color: var(--primary);">ชื่อสิ่งของ</h3>
+          <span id="dialogCodeBadge" style="font-size: 0.78rem; font-weight: 700; color: #64748B; text-transform: uppercase;">GOV-001</span>
+          <h3 id="dialogItemTitle" style="font-size: 1.25rem; font-weight: 700; color: var(--primary-navy);">ชื่อสิ่งของ</h3>
         </div>
-        <button id="modalCloseBtn" class="modal-close">✕</button>
+        <button id="dialogCloseBtn" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #64748B;">✕</button>
       </div>
-      <div class="modal-body">
-        <div id="modalImgWrapper" class="modal-img-wrapper"></div>
-        <div style="background: #F8FAFC; padding: 1rem; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 1rem;">
-          <p style="margin-bottom: 0.4rem;"><strong>หมวดหมู่:</strong> <span id="modalCategory">-</span></p>
-          <p style="margin-bottom: 0.4rem;"><strong>จำนวนคงคลัง:</strong> <span id="modalQty" style="color: var(--primary); font-weight: bold; font-size: 1.1rem;">-</span></p>
-          <p style="margin-bottom: 0.4rem;"><strong>สถานที่จัดเก็บ:</strong> <span id="modalLocation">-</span></p>
-          <p><strong>สถานะความพร้อม:</strong> <span id="modalStatus" style="color: #10B981; font-weight: 600;">-</span></p>
+      <div class="dialog-body-area">
+        <div id="dialogImageStage" class="dialog-image-stage"></div>
+        <div style="background: #F8FAFC; padding: 1.1rem; border-radius: 12px; border: 1px solid #E2E8F0; margin-bottom: 1.1rem;">
+          <p style="margin-bottom: 0.45rem;"><strong>หมวดหมู่:</strong> <span id="dialogCategoryDesc">-</span></p>
+          <p style="margin-bottom: 0.45rem;"><strong>จำนวนคงคลัง:</strong> <span id="dialogStockQty" style="color: var(--primary-navy); font-weight: 800; font-size: 1.15rem;">-</span></p>
+          <p style="margin-bottom: 0.45rem;"><strong>สถานที่จัดเก็บ:</strong> <span id="dialogLocationText">-</span></p>
+          <p><strong>สถานะความพร้อม:</strong> <span id="dialogReadyStatus" style="color: #10B981; font-weight: 700;">-</span></p>
         </div>
-        <button id="modalAddToCartBtn" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 0.75rem;">
-          + เพิ่มลงในรายการเบิก-ยืม
+        <button id="dialogAddToCartBtn" class="btn-interactive btn-navy" style="width: 100%; justify-content: center; padding: 0.8rem; font-size: 0.95rem;">
+          + เพิ่มลงในภารกิจขอเบิก-ยืม
         </button>
       </div>
     </div>
   </div>
 
   <!-- Requisition Cart Drawer -->
-  <div id="cartOverlay" class="modal-overlay"></div>
-  <aside id="cartDrawer" class="cart-drawer">
-    <div class="cart-header">
-      <h3>📋 รายการเบิก-ยืมพัสดุ</h3>
-      <button id="btnCloseCart" style="background: none; border: none; color: #FFF; font-size: 1.3rem; cursor: pointer;">✕</button>
+  <div id="drawerBackdrop" class="dialog-scrim"></div>
+  <aside id="missionCartDrawer" class="mission-drawer">
+    <div class="drawer-head">
+      <h3>📋 ภารกิจเบิก-ยืมพัสดุปกครอง</h3>
+      <button id="btnCloseDrawer" style="background: none; border: none; color: #FFF; font-size: 1.4rem; cursor: pointer;">✕</button>
     </div>
-    <div id="cartItemsList" class="cart-items-list">
+    <div id="cartScrollContainer" class="drawer-scroll-body">
       <!-- Injected by app.js -->
     </div>
-    <div class="cart-footer">
-      <button id="btnSubmitRequisition" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 0.75rem; font-size: 1rem;">
-        🖨️ ยืนยันและพิมพ์ใบเบิก-ยืม
+    <div class="drawer-foot">
+      <button id="btnConfirmRequisition" class="btn-interactive btn-gold" style="width: 100%; justify-content: center; padding: 0.85rem; font-size: 1rem;">
+        🖨️ ยืนยันและพิมพ์ใบเบิก-ยืมภารกิจ
       </button>
     </div>
   </aside>
 
+  <!-- Mobile Bottom Navigation (LIFF / Mobile Navigation) -->
+  <nav class="mobile-mission-nav">
+    <button class="nav-action-item active" data-action="all">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <span>ทั้งหมด</span>
+    </button>
+    <button class="nav-action-item" data-action="cat1">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6l8-4z"/></svg>
+      <span>หมวด ๑</span>
+    </button>
+    <button class="nav-action-item" data-action="cat2">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+      <span>หมวด ๒</span>
+    </button>
+    <button class="nav-action-item" data-action="cat3">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20l10-16 10 16H2z"/></svg>
+      <span>หมวด ๓</span>
+    </button>
+    <button class="nav-action-item" data-action="cart">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      <span>ใบเบิก (<span id="mobileCartCounter">0</span>)</span>
+    </button>
+  </nav>
+
   <!-- Footer -->
-  <footer class="footer">
-    <p>ระบบบริหารจัดการพัสดุปกครอง ๑ ๒ ๓ — แผนกปกครอง วิทยาลัยพยาบาลทหารอากาศ กรมแพทย์ทหารอากาศ</p>
-    <p style="margin-top: 0.3rem; font-size: 0.78rem; opacity: 0.8;">ซิงค์ฐานข้อมูล Master กับ Google Drive (คลังพัสดุnew69 & RTAFNC ONE AY2569) สมบูรณ์ ๑๐๐%</p>
+  <footer class="mission-footer">
+    <p><strong>RTAFNC SUPPLIES LIGHT MISSION CONTROL</strong></p>
+    <p style="margin-top: 0.2rem;">แผนกปกครอง วิทยาลัยพยาบาลทหารอากาศ กรมแพทย์ทหารอากาศ</p>
+    <p style="font-size: 0.78rem; opacity: 0.75; margin-top: 0.35rem;">ฐานข้อมูลเชื่อมต่อ Google Drive (คลังพัสดุnew69 & RTAFNC ONE AY2569) สมบูรณ์ ๑๐๐%</p>
   </footer>
 
   <script src="app.js"></script>
