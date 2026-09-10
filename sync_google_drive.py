@@ -15,6 +15,7 @@ JSON_FILE = os.path.join(ROOT_DIR, 'rtafnc_one_gov_supplies_import_payload.json'
 IMAGES_DIR = os.path.join(ROOT_DIR, 'images')
 
 LOGO_FILE = os.path.join(ROOT_DIR, 'logo_rtafnc.png')
+LOGO_DATA_FILE = os.path.join(ROOT_DIR, 'logo_data.js')
 
 DRIVE_BASE = os.path.expanduser('~/Library/CloudStorage/GoogleDrive-anuchit1tube168@gmail.com/ไดรฟ์ของฉัน')
 DEST_KLANG = os.path.join(DRIVE_BASE, 'คลังพัสดุnew69')
@@ -37,6 +38,8 @@ def sync():
         shutil.copy2(JSON_FILE, os.path.join(DEST_KLANG, os.path.basename(JSON_FILE)))
         if os.path.exists(LOGO_FILE):
             shutil.copy2(LOGO_FILE, os.path.join(DEST_KLANG, os.path.basename(LOGO_FILE)))
+        if os.path.exists(LOGO_DATA_FILE):
+            shutil.copy2(LOGO_DATA_FILE, os.path.join(DEST_KLANG, os.path.basename(LOGO_DATA_FILE)))
         print(f"✅ ซิงค์สำเร็จ -> {DEST_KLANG}")
         success_count += 1
     else:
@@ -48,6 +51,8 @@ def sync():
         shutil.copy2(JSON_FILE, os.path.join(DEST_RTAFNC, os.path.basename(JSON_FILE)))
         if os.path.exists(LOGO_FILE):
             shutil.copy2(LOGO_FILE, os.path.join(DEST_RTAFNC, os.path.basename(LOGO_FILE)))
+        if os.path.exists(LOGO_DATA_FILE):
+            shutil.copy2(LOGO_DATA_FILE, os.path.join(DEST_RTAFNC, os.path.basename(LOGO_DATA_FILE)))
         print(f"✅ ซิงค์สำเร็จ -> {DEST_RTAFNC}")
         success_count += 1
     else:

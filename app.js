@@ -471,6 +471,34 @@ function closeCart() {
   if (backdrop) backdrop.classList.remove('active');
 }
 
+function getOfficialLogoDataUrl() {
+  if (window.RTAFNC_LOGO_BASE64 && typeof window.RTAFNC_LOGO_BASE64 === 'string' && window.RTAFNC_LOGO_BASE64.startsWith('data:image/')) {
+    return window.RTAFNC_LOGO_BASE64;
+  }
+  const domImg = document.querySelector('.brand-logo-img');
+  if (domImg && domImg.src) {
+    return domImg.src;
+  }
+  return new URL('images/logo_rtafnc.png', window.location.href).href;
+}
+
+function showToast(message) {
+  let toast = document.getElementById('missionToast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'missionToast';
+    toast.style.cssText = 'position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); background: #1F3864; color: #FFFFFF; padding: 0.75rem 1.5rem; border-radius: 9999px; font-weight: 600; font-size: 0.92rem; box-shadow: 0 10px 25px rgba(0,0,0,0.25); z-index: 9999; display: flex; align-items: center; gap: 0.5rem; border: 1.5px solid #D4AF37; transition: opacity 0.3s, transform 0.3s; pointer-events: none; opacity: 0;';
+    document.body.appendChild(toast);
+  }
+  toast.innerHTML = `<span>🎖️</span> <span>${message}</span>`;
+  toast.style.opacity = '1';
+  toast.style.transform = 'translateX(-50%) translateY(0)';
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(-50%) translateY(10px)';
+  }, 3200);
+}
+
 function handleRequisitionSubmit() {
   if (requisitionCart.length === 0) {
     alert('กรุณาเลือกรายการพัสดุอย่างน้อย ๑ รายการ');
@@ -484,87 +512,166 @@ function handleRequisitionSubmit() {
   if (!missionTitle) return;
 
   const printWindow = window.open('', '_blank');
+  if (!printWindow) {
+    alert('กรุณาอนุญาต Pop-up บนเบราว์เซอร์เพื่อเปิดหน้าต่างพิมพ์เอกสาร');
+    return;
+  }
+
+  const logoDataUri = getOfficialLogoDataUrl();
   const dateStr = new Date().toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+  const reqNumber = 'REQ-' + Date.now().toString().slice(-6);
   
   let tableRows = '';
   requisitionCart.forEach((it, idx) => {
     tableRows += `
       <tr>
-        <td style="text-align: center; border: 1px solid #000; padding: 6px;">${idx + 1}</td>
-        <td style="text-align: center; border: 1px solid #000; padding: 6px;">${it.item_code}</td>
-        <td style="border: 1px solid #000; padding: 6px;">${it.name}</td>
-        <td style="text-align: center; border: 1px solid #000; padding: 6px; font-weight: bold;">${it.requestedQty}</td>
-        <td style="text-align: center; border: 1px solid #000; padding: 6px;">${it.unit}</td>
-        <td style="border: 1px solid #000; padding: 6px;">คลังพัสดุปกครอง วพอ.</td>
+        <td style="text-align: center; border: 1px solid #000; padding: 7px 6px;">${idx + 1}</td>
+        <td style="text-align: center; border: 1px solid #000; padding: 7px 6px; font-weight: 600;">${it.item_code}</td>
+        <td style="border: 1px solid #000; padding: 7px 8px;">${it.name}</td>
+        <td style="text-align: center; border: 1px solid #000; padding: 7px 6px; font-weight: 700;">${it.requestedQty}</td>
+        <td style="text-align: center; border: 1px solid #000; padding: 7px 6px;">${it.unit}</td>
+        <td style="border: 1px solid #000; padding: 7px 8px; text-align: center;">คลังพัสดุปกครอง วพอ.</td>
       </tr>
     `;
   });
 
-  printWindow.document.write(`
-    <html>
-      <head>
-        <title>ใบขอเบิก-ยืมพัสดุปกครอง วพอ. (ภารกิจ)</title>
-        <style>
-          body { font-family: 'Sarabun', -apple-system, sans-serif; padding: 40px; color: #000; line-height: 1.5; }
-          .header-box { text-align: center; margin-bottom: 25px; border-bottom: 2px solid #000; padding-bottom: 15px; }
-          h2, h3 { margin: 4px; }
-          table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-          th { border: 1px solid #000; background: #EFEFEF; padding: 8px; font-size: 13px; }
-          td { font-size: 13px; }
-          .sig-container { display: flex; justify-content: space-between; margin-top: 55px; text-align: center; }
-          .sig-col { width: 42%; }
-        </style>
-      </head>
-      <body>
-        <div class="header-box">
-          <img src="images/logo_rtafnc.png" alt="ตราสัญลักษณ์ วพอ." style="width: 72px; height: 72px; object-fit: contain; margin-bottom: 8px;">
-          <h3 style="margin: 3px 0; font-size: 15px;">วิทยาลัยพยาบาลทหารอากาศ กรมแพทย์ทหารอากาศ</h3>
-          <h2 style="margin: 4px 0; font-size: 19px; color: #1F3864;">ใบขอเบิก-ยืมพัสดุปกครอง (Logistics Mission Slip)</h2>
-          <p style="font-size: 13px; margin-top: 4px; color: #4B5563;">ระบบควบคุมพัสดุปกครอง ๑ ๒ ๓ ปีการศึกษา ๒๕๖๙</p>
-        </div>
+  printWindow.document.write(`<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8">
+    <title>ใบขอเบิก-ยืมพัสดุปกครอง วพอ. (ภารกิจ)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      @page { size: A4; margin: 15mm 20mm; }
+      * { box-sizing: border-box; }
+      body {
+        font-family: 'Sarabun', -apple-system, sans-serif;
+        padding: 25px 35px;
+        color: #000000;
+        line-height: 1.5;
+        background: #FFFFFF;
+      }
+      .header-box {
+        text-align: center;
+        margin-bottom: 25px;
+        border-bottom: 2px solid #1F3864;
+        padding-bottom: 15px;
+      }
+      .official-logo {
+        width: 82px;
+        height: 82px;
+        object-fit: contain;
+        display: block;
+        margin: 0 auto 10px auto;
+      }
+      h2 { margin: 4px 0; font-size: 20px; color: #1F3864; font-weight: 700; }
+      h3 { margin: 2px 0; font-size: 16px; font-weight: 600; color: #1E293B; }
+      .meta-info {
+        display: flex;
+        justify-content: space-between;
+        margin: 12px 0 8px 0;
+        font-size: 14px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+      }
+      th {
+        border: 1px solid #000000;
+        background: #F1F5F9;
+        padding: 9px 8px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      td {
+        font-size: 13px;
+      }
+      .sig-container {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 50px;
+        text-align: center;
+      }
+      .sig-col {
+        width: 44%;
+      }
+      .sig-col p {
+        margin: 8px 0;
+        font-size: 14px;
+      }
+      @media print {
+        body { padding: 0; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header-box">
+      <img id="rtafncOfficialLogo" src="${logoDataUri}" alt="ตราสัญลักษณ์ วิทยาลัยพยาบาลทหารอากาศ" class="official-logo">
+      <h3>วิทยาลัยพยาบาลทหารอากาศ กรมแพทย์ทหารอากาศ</h3>
+      <h2>ใบขอเบิก-ยืมพัสดุปกครอง (Logistics Mission Slip)</h2>
+      <p style="font-size: 13px; margin-top: 4px; color: #4B5563;">ระบบควบคุมพัสดุปกครอง ๑ ๒ ๓ ปีการศึกษา ๒๕๖๙</p>
+    </div>
 
-        <p><strong>วันที่ทำรายการ:</strong> ${dateStr} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>เลขที่ใบเบิก:</strong> REQ-${Date.now().toString().slice(-6)}</p>
-        <p><strong>ผู้ขอเบิก:</strong> ${requesterName} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>ภารกิจ/วัตถุประสงค์:</strong> ${missionTitle}</p>
-        
-        <table>
-          <thead>
-            <tr>
-              <th style="width: 50px;">ลำดับ</th>
-              <th style="width: 120px;">รหัสพัสดุ</th>
-              <th>รายการสิ่งของพัสดุ</th>
-              <th style="width: 80px;">จำนวนเบิก</th>
-              <th style="width: 80px;">หน่วยนับ</th>
-              <th style="width: 160px;">สถานที่จัดเก็บ</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${tableRows}
-          </tbody>
-        </table>
+    <div class="meta-info">
+      <div><strong>วันที่ทำรายการ:</strong> ${dateStr}</div>
+      <div><strong>เลขที่ใบเบิก:</strong> ${reqNumber}</div>
+    </div>
+    <div class="meta-info" style="margin-top: 0; margin-bottom: 20px;">
+      <div><strong>ผู้ขอเบิก:</strong> ${requesterName}</div>
+      <div><strong>ภารกิจ/วัตถุประสงค์:</strong> ${missionTitle}</div>
+    </div>
+    
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 50px; text-align: center;">ลำดับ</th>
+          <th style="width: 125px; text-align: center;">รหัสพัสดุ</th>
+          <th style="text-align: left; padding-left: 10px;">รายการสิ่งของพัสดุ</th>
+          <th style="width: 85px; text-align: center;">จำนวนเบิก</th>
+          <th style="width: 80px; text-align: center;">หน่วยนับ</th>
+          <th style="width: 160px; text-align: center;">สถานที่จัดเก็บ</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${tableRows}
+      </tbody>
+    </table>
 
-        <div class="sig-container">
-          <div class="sig-col">
-            <p>ลงชื่อ......................................................ผู้ขอเบิก</p>
-            <p>(${requesterName})</p>
-            <p>วันที่ ......./......./.......</p>
-          </div>
-          <div class="sig-col">
-            <p>ลงชื่อ......................................................ผู้จ่าย/นายทะเบียน</p>
-            <p>( เจ้าหน้าที่พัสดุ แผนกปกครอง วพอ. )</p>
-            <p>วันที่ ......./......./.......</p>
-          </div>
-        </div>
+    <div class="sig-container">
+      <div class="sig-col">
+        <p>ลงชื่อ......................................................ผู้ขอเบิก</p>
+        <p>(${requesterName})</p>
+        <p>วันที่ ......./......./.......</p>
+      </div>
+      <div class="sig-col">
+        <p>ลงชื่อ......................................................ผู้จ่าย/นายทะเบียน</p>
+        <p>( เจ้าหน้าที่พัสดุ แผนกปกครอง วพอ. )</p>
+        <p>วันที่ ......./......./.......</p>
+      </div>
+    </div>
 
-        <script>
-          window.print();
-        </script>
-      </body>
-    </html>
-  `);
+    <script>
+      function doPrint() {
+        window.focus();
+        window.print();
+      }
+      var img = document.getElementById('rtafncOfficialLogo');
+      if (img && !img.complete) {
+        img.onload = function() { setTimeout(doPrint, 250); };
+        img.onerror = function() { setTimeout(doPrint, 250); };
+      } else {
+        setTimeout(doPrint, 250);
+      }
+    </script>
+  </body>
+</html>`);
   printWindow.document.close();
 
-  alert('ส่งรายการขอเบิกเรียบร้อยแล้ว! เอกสารพร้อมพิมพ์ทันที');
   requisitionCart = [];
   updateCartBadge();
   closeCart();
+  showToast('สร้างใบขอเบิกสำเร็จ กำลังเปิดหน้าต่างพิมพ์เอกสาร...');
 }
