@@ -1,88 +1,117 @@
 /* ==========================================================================
-   RTAFNC LIGHT MISSION CONTROL DESIGN SYSTEM
+   RTAFNC MISSION CONTROL — GLASS MAX DESIGN SYSTEM (macOS & iPad & Mobile)
    ระบบบริหารจัดการพัสดุปกครอง ๑ ๒ ๓ — วิทยาลัยพยาบาลทหารอากาศ
-   Mode: Light Theme Only | Air Force & Nursing Aesthetic
+   Mode: macOS Frosted Glassmorphism (Liquid Glass) | Responsive iOS / iPadOS
    ========================================================================== */
 
 :root {
-  /* Color Palette - Light Theme Only */
-  --bg-app: #F8FAFC;
-  --bg-surface: #FFFFFF;
-  --bg-surface-elevated: #FFFFFF;
-  --bg-subtle: #F1F5F9;
-  --bg-sky-light: #F0F7FF;
-  
+  /* Color Palette - Air Force & Medical Heritage */
   --primary-navy: #1F3864;
-  --primary-navy-dark: #122443;
+  --primary-navy-dark: #0F1F3D;
   --primary-navy-light: #2A4E8B;
-  
+  --primary-navy-surface: rgba(31, 56, 100, 0.08);
+
   --sky-blue: #0284C7;
+  --sky-blue-hover: #0369A1;
   --sky-blue-soft: #E0F2FE;
-  
-  --warm-gold: #D4AF37;
+  --sky-blue-glass: rgba(2, 132, 199, 0.12);
+
+  --warm-gold: #C59B27;
+  --warm-gold-hover: #A8811A;
   --warm-gold-light: #FEF3C7;
-  --warm-gold-dark: #B49226;
-  
+  --warm-gold-glass: rgba(197, 155, 39, 0.16);
+
   --soft-green: #10B981;
   --soft-green-light: #D1FAE5;
-  
   --soft-red: #EF4444;
   --soft-red-light: #FEE2E2;
 
   --text-main: #0F172A;
-  --text-secondary: #475569;
+  --text-secondary: #334155;
   --text-muted: #64748B;
   --text-light: #94A3B8;
-  
-  --border-light: #E2E8F0;
-  --border-focus: #38BDF8;
 
-  /* Elevation & Radius (16-22px) */
-  --radius-sm: 8px;
+  /* macOS Glass Max Tokens */
+  --glass-canvas-bg: #F4F7FB;
+  --glass-surface: rgba(255, 255, 255, 0.76);
+  --glass-surface-elevated: rgba(255, 255, 255, 0.86);
+  --glass-surface-subtle: rgba(248, 250, 252, 0.65);
+  --glass-surface-translucent: rgba(255, 255, 255, 0.52);
+
+  --glass-blur: blur(24px) saturate(190%);
+  --glass-blur-heavy: blur(32px) saturate(200%);
+  --glass-blur-light: blur(12px) saturate(160%);
+
+  --glass-border: 1px solid rgba(255, 255, 255, 0.85);
+  --glass-border-subtle: 1px solid rgba(226, 232, 240, 0.7);
+  --glass-border-dark: 1px solid rgba(31, 56, 100, 0.12);
+  --glass-specular: inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.95);
+
+  --glass-shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  --glass-shadow-card: 0 10px 30px -4px rgba(31, 56, 100, 0.07), 0 2px 8px -1px rgba(0, 0, 0, 0.03), inset 0 1px 1px 0 rgba(255, 255, 255, 0.9);
+  --glass-shadow-hover: 0 20px 40px -8px rgba(2, 132, 199, 0.18), 0 4px 12px -2px rgba(0, 0, 0, 0.05), inset 0 1px 2px 0 rgba(255, 255, 255, 1);
+  --glass-shadow-modal: 0 30px 70px -15px rgba(15, 23, 42, 0.28), 0 10px 24px -6px rgba(0, 0, 0, 0.08), inset 0 1px 2px rgba(255, 255, 255, 0.95);
+
+  /* Elevation & Radius (macOS Squircle Aesthetic) */
+  --radius-sm: 10px;
   --radius-md: 14px;
-  --radius-card: 20px;
+  --radius-card: 22px;
+  --radius-modal: 26px;
   --radius-pill: 9999px;
-  
-  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.05);
-  --shadow-card: 0 4px 20px -2px rgba(31, 56, 100, 0.07), 0 2px 6px -1px rgba(0, 0, 0, 0.03);
-  --shadow-hover: 0 12px 32px -4px rgba(31, 56, 100, 0.12), 0 4px 12px -2px rgba(0, 0, 0, 0.04);
-  --shadow-drawer: -6px 0 30px rgba(15, 23, 42, 0.12);
 
   /* Touch Target */
   --min-touch-target: 44px;
 }
 
+/* ==========================================================================
+   Reset & Ambient Canvas (macOS Ambient Shimmer)
+   ========================================================================== */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
   -webkit-tap-highlight-color: transparent;
 }
 
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
-  background-color: var(--bg-app);
+  background-color: var(--glass-canvas-bg);
   color: var(--text-main);
   line-height: 1.5;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  position: relative;
+  overflow-x: hidden;
+  /* Ambient Multi-Mesh Gradient (shining softly behind frosted glass) */
   background-image: 
-    radial-gradient(circle at 10% 10%, rgba(2, 132, 199, 0.03) 0%, transparent 40%),
-    radial-gradient(circle at 90% 90%, rgba(212, 175, 55, 0.04) 0%, transparent 40%);
+    radial-gradient(circle at 5% 15%, rgba(2, 132, 199, 0.11) 0%, transparent 42%),
+    radial-gradient(circle at 92% 10%, rgba(197, 155, 39, 0.09) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(31, 56, 100, 0.05) 0%, transparent 55%),
+    radial-gradient(circle at 85% 85%, rgba(2, 132, 199, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 15% 90%, rgba(16, 185, 129, 0.07) 0%, transparent 40%);
+  background-attachment: fixed;
 }
 
 /* ==========================================================================
-   Header / Mission Bar
+   Header / macOS Mission Bar (Frosted Acrylic Floating Bar)
    ========================================================================== */
 .mission-header {
-  background: var(--bg-surface);
-  border-bottom: 1px solid var(--border-light);
-  padding: 0.85rem 1.75rem;
+  background: var(--glass-surface);
+  -webkit-backdrop-filter: var(--glass-blur-heavy);
+  backdrop-filter: var(--glass-blur-heavy);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 4px 24px rgba(31, 56, 100, 0.05), inset 0 -1px 0 rgba(226, 232, 240, 0.6);
+  padding: 0.85rem 1.5rem;
   position: sticky;
   top: 0;
-  z-index: 50;
-  box-shadow: 0 2px 10px rgba(31, 56, 100, 0.04);
+  z-index: 90;
+  transition: all 0.25s ease;
 }
 
 .mission-header-container {
@@ -91,29 +120,32 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1.25rem;
+  gap: 1rem;
 }
 
 .brand-wrapper {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.9rem;
+  text-decoration: none;
+  color: inherit;
 }
 
 .brand-emblem {
-  width: 50px;
-  height: 50px;
-  background: #FFFFFF;
-  border-radius: 12px;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.9);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 14px rgba(31, 56, 100, 0.1), var(--glass-specular);
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  box-shadow: 0 4px 14px rgba(31, 56, 100, 0.12);
-  border: 1.5px solid rgba(212, 175, 55, 0.35);
-  padding: 3px;
+  padding: 4px;
   flex-shrink: 0;
-  transition: transform var(--transition-bounce);
+  transition: transform 0.25s ease;
 }
 
 .brand-emblem:hover {
@@ -124,254 +156,264 @@ body {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.08));
 }
 
 .brand-titles h1 {
-  font-size: 1.15rem;
-  font-weight: 700;
+  font-size: clamp(1.05rem, 2.2vw, 1.35rem);
+  font-weight: 800;
   color: var(--primary-navy);
+  line-height: 1.25;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  letter-spacing: -0.2px;
+  flex-wrap: wrap;
 }
 
 .mission-tag {
-  background: var(--sky-blue-soft);
-  color: var(--sky-blue);
   font-size: 0.72rem;
   font-weight: 700;
-  padding: 2px 8px;
+  background: var(--sky-blue-soft);
+  color: var(--sky-blue);
+  padding: 2px 9px;
   border-radius: var(--radius-pill);
   border: 1px solid rgba(2, 132, 199, 0.2);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
 }
 
 .brand-titles p {
-  font-size: 0.8rem;
+  font-size: clamp(0.74rem, 1.6vw, 0.84rem);
   color: var(--text-muted);
+  margin-top: 2px;
 }
 
 .header-action-group {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  flex-shrink: 0;
 }
 
 .status-radar-pill {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  background: var(--bg-subtle);
-  border: 1px solid var(--border-light);
-  padding: 0.35rem 0.8rem;
+  background: rgba(255, 255, 255, 0.7);
+  -webkit-backdrop-filter: var(--glass-blur-sm);
+  backdrop-filter: var(--glass-blur-sm);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  padding: 0.4rem 0.85rem;
   border-radius: var(--radius-pill);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 600;
   color: var(--text-secondary);
+  box-shadow: var(--glass-shadow-sm);
 }
 
 .status-ping {
-  position: relative;
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: var(--soft-green);
+  background: var(--soft-green);
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6);
+  animation: radarPing 2s infinite cubic-bezier(0.66, 0, 0, 1);
 }
 
-.status-ping::after {
-  content: '';
-  position: absolute;
-  top: -3px;
-  left: -3px;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background-color: rgba(16, 185, 129, 0.4);
-  animation: radarWave 2s infinite ease-out;
+@keyframes radarPing {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
 }
 
-@keyframes radarWave {
-  0% { transform: scale(0.5); opacity: 1; }
-  100% { transform: scale(1.6); opacity: 0; }
-}
-
+/* ==========================================================================
+   macOS Interactive Glass Buttons
+   ========================================================================== */
 .btn-interactive {
-  min-height: var(--min-touch-target);
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
-  padding: 0.5rem 1rem;
+  gap: 0.5rem;
+  padding: 0.52rem 1.1rem;
   border-radius: var(--radius-md);
   font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  border: none;
   text-decoration: none;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  min-height: var(--min-touch-target);
+  border: none;
+  outline: none;
+  white-space: nowrap;
+  user-select: none;
 }
 
 .btn-navy {
-  background: var(--primary-navy);
+  background: linear-gradient(180deg, var(--primary-navy-light) 0%, var(--primary-navy) 100%);
   color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 14px rgba(31, 56, 100, 0.24), inset 0 1px 1px rgba(255, 255, 255, 0.35);
 }
 
 .btn-navy:hover {
-  background: var(--primary-navy-light);
+  background: linear-gradient(180deg, #325aa1 0%, #172c50 100%);
+  box-shadow: 0 6px 18px rgba(31, 56, 100, 0.32), inset 0 1px 1px rgba(255, 255, 255, 0.45);
   transform: translateY(-1px);
-  box-shadow: var(--shadow-sm);
+}
+
+.btn-navy:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 6px rgba(31, 56, 100, 0.2);
 }
 
 .btn-gold {
-  background: linear-gradient(135deg, #FFE896 0%, var(--warm-gold) 100%);
-  color: var(--primary-navy-dark);
-  border: 1px solid var(--warm-gold-dark);
-  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.25);
+  background: linear-gradient(180deg, #E2B738 0%, var(--warm-gold) 100%);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 14px rgba(197, 155, 39, 0.26), inset 0 1px 1px rgba(255, 255, 255, 0.4);
 }
 
 .btn-gold:hover {
-  filter: brightness(1.04);
+  background: linear-gradient(180deg, #F0C648 0%, var(--warm-gold-hover) 100%);
+  box-shadow: 0 6px 18px rgba(197, 155, 39, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.5);
   transform: translateY(-1px);
 }
 
-.btn-ghost {
-  background: var(--bg-subtle);
-  color: var(--text-secondary);
-  border: 1px solid var(--border-light);
-}
-
-.btn-ghost:hover {
-  background: #E2E8F0;
-  color: var(--text-main);
-}
-
-.cart-btn {
-  position: relative;
+.btn-gold:active {
+  transform: translateY(1px);
 }
 
 .cart-badge-pill {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background: var(--soft-red);
-  color: #FFFFFF;
-  font-size: 0.72rem;
-  font-weight: 700;
-  padding: 2px 6px;
+  background: rgba(255, 255, 255, 0.25);
+  padding: 1px 8px;
   border-radius: var(--radius-pill);
-  min-width: 18px;
-  text-align: center;
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin-left: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
 }
 
 /* ==========================================================================
-   Main Mission Control Grid
+   Main Content Layout
    ========================================================================== */
 .mission-main-content {
   max-width: 1440px;
-  margin: 1.5rem auto;
-  padding: 0 1.5rem;
-  flex: 1;
+  margin: 0 auto;
+  padding: 1.5rem;
   width: 100%;
+  flex: 1;
 }
 
-/* Hero & Commander Badge */
+/* ==========================================================================
+   Hero Mission Card (Frosted Glass Slab)
+   ========================================================================== */
 .mission-hero-card {
-  background: var(--bg-surface);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(240, 247, 255, 0.72) 100%);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
   border-radius: var(--radius-card);
-  border: 1px solid var(--border-light);
-  padding: 1.5rem 1.75rem;
-  box-shadow: var(--shadow-card);
+  border: var(--glass-border);
+  box-shadow: var(--glass-shadow-card);
+  padding: 1.6rem 2rem;
   margin-bottom: 1.5rem;
+  position: relative;
+  overflow: hidden;
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
-  position: relative;
-  overflow: hidden;
 }
 
 .hero-backdrop-wings {
   position: absolute;
-  right: -30px;
-  top: -20px;
-  width: 240px;
+  right: -20px;
+  top: -30px;
+  width: 260px;
+  height: 260px;
   opacity: 0.04;
   pointer-events: none;
 }
 
 .hero-motto h2 {
-  font-size: 1.45rem;
-  font-weight: 700;
+  font-size: clamp(1.15rem, 2.3vw, 1.45rem);
+  font-weight: 800;
   color: var(--primary-navy);
-  margin-bottom: 0.25rem;
-  letter-spacing: -0.3px;
+  line-height: 1.35;
+  letter-spacing: -0.2px;
 }
 
 .hero-motto p {
-  font-size: 0.92rem;
-  color: var(--text-secondary);
+  font-size: clamp(0.85rem, 1.6vw, 0.95rem);
+  color: var(--text-muted);
+  margin-top: 0.4rem;
+  font-weight: 500;
 }
 
 .commander-profile {
   display: flex;
   align-items: center;
-  gap: 0.9rem;
-  background: var(--bg-sky-light);
-  padding: 0.6rem 1rem;
+  gap: 0.85rem;
+  background: rgba(255, 255, 255, 0.65);
+  -webkit-backdrop-filter: var(--glass-blur-sm);
+  backdrop-filter: var(--glass-blur-sm);
+  padding: 0.65rem 1rem;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(2, 132, 199, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: var(--glass-shadow-sm);
+  flex-shrink: 0;
 }
 
 .profile-avatar {
   width: 42px;
   height: 42px;
-  background: var(--primary-navy);
-  color: #FFFFFF;
   border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-navy) 0%, var(--sky-blue) 100%);
+  color: #FFFFFF;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 1rem;
-  border: 2px solid var(--warm-gold);
+  font-size: 0.82rem;
+  box-shadow: 0 3px 10px rgba(31, 56, 100, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.9);
 }
 
 .profile-info h4 {
-  font-size: 0.88rem;
+  font-size: 0.92rem;
   font-weight: 700;
   color: var(--primary-navy);
 }
 
 .profile-info span {
-  font-size: 0.76rem;
+  font-size: 0.74rem;
   color: var(--text-muted);
+  font-weight: 500;
 }
 
-/* Mission Radar & Timeline Grid */
+/* ==========================================================================
+   Mission Insights Grid (Radar / Timeline / Readiness)
+   ========================================================================== */
 .mission-insight-row {
   display: grid;
-  grid-template-columns: 1.2fr 1fr 1fr;
+  grid-template-columns: 1.15fr 1fr 1fr;
   gap: 1.25rem;
   margin-bottom: 1.5rem;
 }
 
-@media (max-width: 1024px) {
-  .mission-insight-row {
-    grid-template-columns: 1fr;
-  }
-}
-
 .insight-card {
-  background: var(--bg-surface);
+  background: var(--glass-surface);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
   border-radius: var(--radius-card);
-  border: 1px solid var(--border-light);
-  padding: 1.25rem 1.5rem;
-  box-shadow: var(--shadow-card);
+  border: var(--glass-border);
+  padding: 1.35rem 1.5rem;
+  box-shadow: var(--glass-shadow-card);
   display: flex;
   flex-direction: column;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.insight-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--glass-shadow-hover);
 }
 
 .card-header-label {
@@ -387,37 +429,41 @@ body {
   color: var(--primary-navy);
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.45rem;
 }
 
 .card-header-label .sub-pill {
   font-size: 0.74rem;
-  background: var(--bg-subtle);
-  padding: 2px 8px;
+  background: rgba(241, 245, 249, 0.8);
+  -webkit-backdrop-filter: var(--glass-blur-sm);
+  backdrop-filter: var(--glass-blur-sm);
+  padding: 2px 9px;
   border-radius: var(--radius-pill);
   color: var(--text-muted);
   font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
-/* Radar Chart Visualization (SVG) */
+/* Radar Chart (SVG) */
 .radar-chart-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem 0;
+  padding: 0.4rem 0;
   position: relative;
 }
 
 .radar-svg {
   width: 100%;
   max-width: 250px;
-  height: 200px;
+  height: 190px;
   overflow: visible;
+  filter: drop-shadow(0 4px 8px rgba(2, 132, 199, 0.15));
 }
 
 .radar-polygon {
-  fill: rgba(2, 132, 199, 0.2);
+  fill: rgba(2, 132, 199, 0.18);
   stroke: var(--sky-blue);
   stroke-width: 2.5;
   stroke-linejoin: round;
@@ -427,60 +473,64 @@ body {
 .radar-legend {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.5rem;
+  gap: 0.45rem;
   width: 100%;
-  margin-top: 0.8rem;
-  font-size: 0.78rem;
+  margin-top: 0.65rem;
+  padding-top: 0.65rem;
+  border-top: 1px dashed rgba(226, 232, 240, 0.8);
 }
 
 .legend-item {
+  font-size: 0.74rem;
+  color: var(--text-muted);
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  color: var(--text-secondary);
+  font-weight: 500;
 }
 
 .legend-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
+  flex-shrink: 0;
 }
 
-/* Logistics Mission Timeline */
+/* Timeline Flow */
 .timeline-list {
   display: flex;
   flex-direction: column;
-  gap: 0.9rem;
-  margin-top: 0.5rem;
+  gap: 0.85rem;
+  margin-top: 0.35rem;
 }
 
 .timeline-step {
   display: flex;
   align-items: flex-start;
-  gap: 0.8rem;
+  gap: 0.75rem;
   position: relative;
 }
 
 .timeline-step:not(:last-child)::after {
   content: '';
   position: absolute;
-  left: 14px;
-  top: 28px;
+  left: 13px;
+  top: 26px;
   bottom: -10px;
   width: 2px;
-  background-color: var(--border-light);
+  background-color: rgba(226, 232, 240, 0.9);
 }
 
 .step-marker {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
-  background: var(--bg-subtle);
-  border: 2px solid var(--border-light);
+  background: var(--glass-surface);
+  border: 2px solid rgba(226, 232, 240, 0.9);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.75rem;
+  font-size: 0.74rem;
   font-weight: bold;
   color: var(--text-muted);
   flex-shrink: 0;
@@ -500,7 +550,7 @@ body {
 }
 
 .step-content h5 {
-  font-size: 0.85rem;
+  font-size: 0.84rem;
   font-weight: 700;
   color: var(--text-main);
 }
@@ -508,20 +558,24 @@ body {
 .step-content p {
   font-size: 0.75rem;
   color: var(--text-muted);
+  line-height: 1.35;
 }
 
-/* Quick KPI Meter */
+/* Readiness Meters */
 .meter-grid {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  margin-top: 0.5rem;
+  gap: 0.65rem;
+  margin-top: 0.25rem;
 }
 
 .meter-item {
-  background: var(--bg-subtle);
-  padding: 0.65rem 0.85rem;
+  background: rgba(248, 250, 252, 0.65);
+  -webkit-backdrop-filter: var(--glass-blur-sm);
+  backdrop-filter: var(--glass-blur-sm);
+  padding: 0.6rem 0.85rem;
   border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.8);
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
@@ -530,13 +584,13 @@ body {
 .meter-labels {
   display: flex;
   justify-content: space-between;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 600;
 }
 
 .meter-bar-track {
   height: 7px;
-  background: #E2E8F0;
+  background: rgba(226, 232, 240, 0.7);
   border-radius: var(--radius-pill);
   overflow: hidden;
 }
@@ -548,14 +602,16 @@ body {
 }
 
 /* ==========================================================================
-   Category Tabs & Control Center
+   Control Center & Filter Dock (macOS Segmented Island)
    ========================================================================== */
 .control-hub {
-  background: var(--bg-surface);
+  background: var(--glass-surface);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
   border-radius: var(--radius-card);
-  border: 1px solid var(--border-light);
-  padding: 1.1rem 1.35rem;
-  box-shadow: var(--shadow-card);
+  border: var(--glass-border);
+  padding: 1.15rem 1.4rem;
+  box-shadow: var(--glass-shadow-card);
   margin-bottom: 1.5rem;
   display: flex;
   flex-direction: column;
@@ -564,10 +620,11 @@ body {
 
 .tabs-track {
   display: flex;
-  gap: 0.6rem;
+  gap: 0.55rem;
   overflow-x: auto;
-  padding-bottom: 0.3rem;
+  padding-bottom: 0.35rem;
   scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 .tabs-track::-webkit-scrollbar {
@@ -576,38 +633,41 @@ body {
 
 .mission-tab-btn {
   min-height: var(--min-touch-target);
-  padding: 0.5rem 1.1rem;
+  padding: 0.48rem 1.05rem;
   border-radius: var(--radius-pill);
-  border: 1px solid var(--border-light);
-  background: var(--bg-subtle);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  background: rgba(248, 250, 252, 0.7);
   color: var(--text-secondary);
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.45rem;
   white-space: nowrap;
+  box-shadow: var(--glass-shadow-sm);
+  user-select: none;
 }
 
 .mission-tab-btn:hover {
-  background: #E2E8F0;
-  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--primary-navy);
+  transform: translateY(-1px);
 }
 
 .mission-tab-btn.active {
-  background: var(--primary-navy);
+  background: linear-gradient(180deg, var(--primary-navy-light) 0%, var(--primary-navy) 100%);
   color: #FFFFFF;
-  border-color: var(--primary-navy);
-  box-shadow: 0 4px 12px rgba(31, 56, 100, 0.25);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 14px rgba(31, 56, 100, 0.24), inset 0 1px 1px rgba(255, 255, 255, 0.3);
 }
 
 .tab-counter {
-  background: rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.06);
   padding: 1px 7px;
   border-radius: var(--radius-pill);
-  font-size: 0.75rem;
+  font-size: 0.74rem;
   font-weight: 700;
 }
 
@@ -627,7 +687,7 @@ body {
 .search-input-wrapper {
   position: relative;
   flex: 1;
-  min-width: 280px;
+  min-width: 270px;
 }
 
 .search-lens-icon {
@@ -636,43 +696,51 @@ body {
   top: 50%;
   transform: translateY(-50%);
   color: var(--text-muted);
+  font-size: 0.9rem;
+  pointer-events: none;
 }
 
 .mission-search-input {
   width: 100%;
   min-height: var(--min-touch-target);
-  padding: 0.6rem 1rem 0.6rem 2.5rem;
+  padding: 0.6rem 1rem 0.6rem 2.45rem;
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-light);
-  background: var(--bg-app);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  background: rgba(248, 250, 252, 0.75);
+  -webkit-backdrop-filter: var(--glass-blur-sm);
+  backdrop-filter: var(--glass-blur-sm);
   font-size: 0.92rem;
   outline: none;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
 .mission-search-input:focus {
   border-color: var(--sky-blue);
-  background: #FFFFFF;
-  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.16), var(--glass-specular);
 }
 
 .dock-actions {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.85rem;
 }
 
 .view-mode-selector {
   display: inline-flex;
-  background: var(--bg-subtle);
-  border: 1px solid var(--border-light);
+  background: rgba(241, 245, 249, 0.75);
+  -webkit-backdrop-filter: var(--glass-blur-sm);
+  backdrop-filter: var(--glass-blur-sm);
+  border: 1px solid rgba(255, 255, 255, 0.8);
   border-radius: var(--radius-md);
   padding: 3px;
+  box-shadow: var(--glass-shadow-sm);
 }
 
 .mode-btn {
-  min-height: 38px;
-  padding: 0 0.75rem;
+  min-height: 36px;
+  padding: 0 0.85rem;
   border: none;
   background: transparent;
   color: var(--text-muted);
@@ -681,81 +749,88 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  font-size: 0.85rem;
+  font-size: 0.84rem;
   font-weight: 600;
+  transition: all 0.18s ease;
 }
 
 .mode-btn.active {
-  background: #FFFFFF;
+  background: rgba(255, 255, 255, 0.95);
   color: var(--primary-navy);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08), var(--glass-specular);
 }
 
 /* ==========================================================================
-   Mission Cards Grid
+   Mission Cards Grid (macOS Liquid Glass Cards)
    ========================================================================== */
 .mission-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.35rem;
 }
 
 .mission-card {
-  background: var(--bg-surface);
+  background: var(--glass-surface);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
   border-radius: var(--radius-card);
-  border: 1px solid var(--border-light);
-  box-shadow: var(--shadow-card);
+  border: var(--glass-border);
+  box-shadow: var(--glass-shadow-card);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s;
+  position: relative;
 }
 
 .mission-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-hover);
-  border-color: #CBD5E1;
+  transform: translateY(-5px);
+  box-shadow: var(--glass-shadow-hover);
+  border-color: rgba(56, 189, 248, 0.45);
 }
 
 .card-visual-port {
-  height: 210px;
-  background: #F8FAFC;
+  height: 200px;
+  background: rgba(248, 250, 252, 0.6);
   position: relative;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.6);
 }
 
 .card-photo {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.35s ease;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .mission-card:hover .card-photo {
-  transform: scale(1.06);
+  transform: scale(1.05);
 }
 
 .category-badge-chip {
   position: absolute;
-  top: 12px;
-  left: 12px;
+  top: 10px;
+  left: 10px;
   padding: 4px 10px;
   border-radius: var(--radius-pill);
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   font-weight: 700;
   color: #FFFFFF;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.18);
-  backdrop-filter: blur(4px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.16);
+  -webkit-backdrop-filter: var(--glass-blur-sm);
+  backdrop-filter: var(--glass-blur-sm);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.2px;
 }
 
-.chip-cat1 { background: rgba(2, 132, 199, 0.92); }
-.chip-cat2 { background: rgba(198, 89, 17, 0.92); }
-.chip-cat3 { background: rgba(55, 86, 35, 0.92); }
+.chip-cat1 { background: rgba(2, 132, 199, 0.9); }
+.chip-cat2 { background: rgba(198, 89, 17, 0.9); }
+.chip-cat3 { background: rgba(55, 86, 35, 0.9); }
 
 .card-content-area {
   padding: 1.15rem;
@@ -765,7 +840,7 @@ body {
 }
 
 .code-indicator {
-  font-size: 0.75rem;
+  font-size: 0.74rem;
   font-weight: 700;
   color: var(--text-muted);
   letter-spacing: 0.6px;
@@ -773,12 +848,12 @@ body {
 }
 
 .item-heading {
-  font-size: 1.05rem;
+  font-size: 1.02rem;
   font-weight: 700;
   color: var(--primary-navy);
-  margin: 0.3rem 0 0.6rem 0;
+  margin: 0.25rem 0 0.55rem 0;
   line-height: 1.35;
-  height: 2.8rem;
+  height: 2.75rem;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -790,20 +865,21 @@ body {
   align-items: center;
   justify-content: space-between;
   margin-top: auto;
-  padding-top: 0.85rem;
-  border-top: 1px dashed var(--border-light);
+  padding-top: 0.8rem;
+  border-top: 1px dashed rgba(226, 232, 240, 0.8);
 }
 
 .stock-figure {
-  font-size: 1.15rem;
-  font-weight: 700;
+  font-size: 1.2rem;
+  font-weight: 800;
   color: var(--primary-navy);
 }
 
 .stock-unit {
   font-size: 0.82rem;
   color: var(--text-muted);
-  font-weight: 500;
+  font-weight: 600;
+  margin-left: 2px;
 }
 
 .card-btn-dock {
@@ -815,53 +891,65 @@ body {
 
 .btn-request {
   min-height: 40px;
-  background: var(--sky-blue);
+  background: linear-gradient(180deg, #38BDF8 0%, var(--sky-blue) 100%);
   color: #FFFFFF;
   border-radius: var(--radius-md);
-  padding: 0 0.8rem;
+  padding: 0 0.85rem;
   font-size: 0.86rem;
   font-weight: 600;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.22), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .btn-request:hover {
-  background: #0369A1;
+  background: linear-gradient(180deg, #0EA5E9 0%, var(--sky-blue-hover) 100%);
+  box-shadow: 0 6px 16px rgba(2, 132, 199, 0.32), inset 0 1px 1px rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+.btn-request:active {
+  transform: translateY(1px);
 }
 
 .btn-inspect {
   min-height: 40px;
   min-width: 40px;
-  background: var(--bg-subtle);
+  background: rgba(248, 250, 252, 0.7);
   color: var(--text-secondary);
-  border: 1px solid var(--border-light);
+  border: 1px solid rgba(255, 255, 255, 0.85);
   border-radius: var(--radius-md);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  box-shadow: var(--glass-shadow-sm);
+  transition: all 0.2s ease;
 }
 
 .btn-inspect:hover {
-  background: #E2E8F0;
+  background: rgba(255, 255, 255, 0.95);
   color: var(--text-main);
+  transform: translateY(-1px);
 }
 
 /* ==========================================================================
-   Table View Layout
+   Table View Layout (Glass Table)
    ========================================================================== */
 .table-mission-card {
-  background: var(--bg-surface);
+  background: var(--glass-surface);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
   border-radius: var(--radius-card);
-  border: 1px solid var(--border-light);
-  box-shadow: var(--shadow-card);
+  border: var(--glass-border);
+  box-shadow: var(--glass-shadow-card);
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .mission-data-table {
@@ -873,20 +961,21 @@ body {
 .mission-data-table th {
   background: var(--primary-navy);
   color: #FFFFFF;
-  padding: 0.9rem 1.1rem;
+  padding: 0.95rem 1.1rem;
   font-size: 0.88rem;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .mission-data-table td {
   padding: 0.85rem 1.1rem;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.6);
   font-size: 0.9rem;
   vertical-align: middle;
 }
 
 .mission-data-table tr:hover td {
-  background-color: var(--bg-sky-light);
+  background-color: rgba(240, 247, 255, 0.6);
 }
 
 .table-thumb-box {
@@ -894,22 +983,28 @@ body {
   height: 52px;
   object-fit: cover;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border-light);
+  border: 1px solid rgba(226, 232, 240, 0.8);
   cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.table-thumb-box:hover {
+  transform: scale(1.08);
 }
 
 /* ==========================================================================
-   Modal Dialogs & Drawers
+   Modal Dialog (macOS Window Aesthetic)
    ========================================================================== */
 .dialog-scrim {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(4px);
+  background: rgba(15, 23, 42, 0.45);
+  -webkit-backdrop-filter: var(--glass-blur-sm);
+  backdrop-filter: var(--glass-blur-sm);
   display: none;
   align-items: center;
   justify-content: center;
-  z-index: 100;
+  z-index: 120;
   padding: 1.25rem;
 }
 
@@ -918,24 +1013,27 @@ body {
 }
 
 .dialog-frame {
-  background: var(--bg-surface);
-  border-radius: var(--radius-card);
-  max-width: 620px;
+  background: var(--glass-surface-elevated);
+  -webkit-backdrop-filter: var(--glass-blur-heavy);
+  backdrop-filter: var(--glass-blur-heavy);
+  border-radius: var(--radius-modal);
+  border: var(--glass-border);
+  max-width: 600px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: var(--shadow-drawer);
-  animation: dialogPop 0.22s ease-out;
+  box-shadow: var(--glass-shadow-modal);
+  animation: macWindowPop 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@keyframes dialogPop {
-  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+@keyframes macWindowPop {
+  from { opacity: 0; transform: scale(0.94) translateY(12px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 .dialog-top-bar {
-  padding: 1.2rem 1.5rem;
-  border-bottom: 1px solid var(--border-light);
+  padding: 1.25rem 1.6rem;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.7);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -947,34 +1045,40 @@ body {
 
 .dialog-image-stage {
   width: 100%;
-  max-height: 360px;
+  max-height: 350px;
   border-radius: var(--radius-md);
   overflow: hidden;
   background: #000000;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1.1rem;
+  margin-bottom: 1.15rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
 }
 
 .dialog-image-stage img {
   max-width: 100%;
-  max-height: 360px;
+  max-height: 350px;
   object-fit: contain;
 }
 
-/* Requisition Mission Drawer */
+/* ==========================================================================
+   Requisition Mission Drawer (macOS Translucent Sidebar)
+   ========================================================================== */
 .mission-drawer {
   position: fixed;
   top: 0;
   right: -480px;
-  width: 460px;
+  width: 450px;
   max-width: 100vw;
   height: 100vh;
-  background: var(--bg-surface);
-  box-shadow: var(--shadow-drawer);
-  z-index: 110;
-  transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  background: var(--glass-surface-elevated);
+  -webkit-backdrop-filter: var(--glass-blur-heavy);
+  backdrop-filter: var(--glass-blur-heavy);
+  border-left: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: -10px 0 40px rgba(15, 23, 42, 0.15);
+  z-index: 130;
+  transition: right 0.32s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
 }
@@ -984,12 +1088,13 @@ body {
 }
 
 .drawer-head {
-  background: var(--primary-navy);
+  background: linear-gradient(180deg, var(--primary-navy-light) 0%, var(--primary-navy) 100%);
   color: #FFFFFF;
   padding: 1.25rem 1.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .drawer-scroll-body {
@@ -1000,32 +1105,32 @@ body {
 
 .drawer-foot {
   padding: 1.25rem 1.5rem;
-  border-top: 1px solid var(--border-light);
-  background: var(--bg-subtle);
+  border-top: 1px solid rgba(226, 232, 240, 0.7);
+  background: rgba(248, 250, 252, 0.8);
+  -webkit-backdrop-filter: var(--glass-blur-sm);
+  backdrop-filter: var(--glass-blur-sm);
 }
 
-/* Mobile Bottom Navigation (LIFF / Mobile Optimized) */
+/* ==========================================================================
+   Mobile Floating Dock (macOS / iOS Bottom Glass Bar)
+   ========================================================================== */
 .mobile-mission-nav {
   display: none;
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: var(--bg-surface);
-  border-top: 1px solid var(--border-light);
-  padding: 0.5rem 1rem;
-  z-index: 45;
-  box-shadow: 0 -4px 12px rgba(15, 23, 42, 0.05);
+  bottom: max(10px, env(safe-area-inset-bottom, 10px));
+  left: 12px;
+  right: 12px;
+  max-width: 500px;
+  margin: 0 auto;
+  background: var(--glass-surface-elevated);
+  -webkit-backdrop-filter: var(--glass-blur-heavy);
+  backdrop-filter: var(--glass-blur-heavy);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 26px;
+  padding: 0.45rem 0.8rem;
+  z-index: 95;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12), var(--glass-specular);
   justify-content: space-around;
-}
-
-@media (max-width: 768px) {
-  .mobile-mission-nav {
-    display: flex;
-  }
-  body {
-    padding-bottom: 70px;
-  }
 }
 
 .nav-action-item {
@@ -1041,10 +1146,14 @@ body {
   min-height: var(--min-touch-target);
   cursor: pointer;
   gap: 0.2rem;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
 }
 
 .nav-action-item.active {
   color: var(--sky-blue);
+  background: rgba(2, 132, 199, 0.08);
 }
 
 .nav-action-item svg {
@@ -1052,13 +1161,264 @@ body {
   height: 22px;
 }
 
-/* Footer */
+/* ==========================================================================
+   Footer
+   ========================================================================== */
 .mission-footer {
-  background: var(--bg-surface);
-  border-top: 1px solid var(--border-light);
+  background: var(--glass-surface);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border-top: 1px solid rgba(226, 232, 240, 0.7);
   padding: 1.5rem;
   text-align: center;
   font-size: 0.85rem;
   color: var(--text-muted);
   margin-top: auto;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN: iPad & Tablet (768px - 1024px)
+   ========================================================================== */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .mission-main-content {
+    padding: 1.25rem;
+  }
+
+  .mission-insight-row {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+
+  .mission-cards-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.1rem;
+  }
+
+  .mission-hero-card {
+    padding: 1.35rem 1.6rem;
+  }
+
+  .hero-motto h2 {
+    font-size: 1.25rem;
+  }
+
+  .card-visual-port {
+    height: 185px;
+  }
+
+  .mission-drawer {
+    width: 400px;
+  }
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN: Mobile Screens (< 768px)
+   ========================================================================== */
+@media (max-width: 768px) {
+  body {
+    padding-bottom: calc(75px + env(safe-area-inset-bottom, 10px));
+  }
+
+  .mission-header {
+    padding: 0.65rem 1rem;
+  }
+
+  .mission-header-container {
+    gap: 0.6rem;
+  }
+
+  .brand-emblem {
+    width: 40px;
+    height: 40px;
+  }
+
+  .brand-titles h1 {
+    font-size: 1.05rem;
+  }
+
+  .mission-tag {
+    display: none; /* Hide on small mobile to prevent wrapping */
+  }
+
+  .brand-titles p {
+    font-size: 0.7rem;
+  }
+
+  /* Compact Header Action Group */
+  .status-radar-pill {
+    display: none; /* Accessible in Mobile bottom nav or hero instead */
+  }
+
+  .header-action-group .btn-gold span:last-child {
+    display: none; /* Icon-only Excel download on mobile */
+  }
+
+  .header-action-group .btn-gold {
+    padding: 0.45rem 0.75rem;
+  }
+
+  .header-action-group .cart-btn span:first-child {
+    display: none;
+  }
+
+  .header-action-group .cart-btn {
+    padding: 0.45rem 0.75rem;
+  }
+
+  .header-action-group .cart-btn::before {
+    content: "📋 ";
+  }
+
+  /* Main Container */
+  .mission-main-content {
+    padding: 0.85rem 0.75rem;
+  }
+
+  /* Hero Card Mobile */
+  .mission-hero-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.2rem 1.15rem;
+    gap: 1rem;
+  }
+
+  .commander-profile {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  /* Insights Stack */
+  .mission-insight-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .insight-card {
+    padding: 1.15rem 1.25rem;
+  }
+
+  /* Control Hub */
+  .control-hub {
+    padding: 0.95rem 1rem;
+    gap: 0.85rem;
+  }
+
+  .search-filter-dock {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .dock-actions {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  /* Cards Grid Mobile */
+  .mission-cards-grid {
+    grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+    gap: 0.85rem;
+  }
+
+  .card-visual-port {
+    height: 155px;
+  }
+
+  .card-content-area {
+    padding: 0.85rem;
+  }
+
+  .item-heading {
+    font-size: 0.9rem;
+    height: 2.5rem;
+    margin: 0.2rem 0 0.4rem 0;
+  }
+
+  .stock-figure {
+    font-size: 1.05rem;
+  }
+
+  .card-btn-dock {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+  }
+
+  .btn-request {
+    font-size: 0.78rem;
+    min-height: 38px;
+    padding: 0 0.5rem;
+  }
+
+  .btn-inspect {
+    display: none; /* On mobile, tapping the photo/card opens inspect */
+  }
+
+  /* Mobile Cart Bottom Sheet */
+  .mission-drawer {
+    top: auto;
+    bottom: -100%;
+    right: 0;
+    left: 0;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    max-height: 86vh;
+    border-radius: 26px 26px 0 0;
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 -10px 40px rgba(15, 23, 42, 0.25);
+    transition: bottom 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .mission-drawer.active {
+    bottom: 0;
+    right: 0;
+  }
+
+  .drawer-foot {
+    padding-bottom: max(1.25rem, env(safe-area-inset-bottom, 15px));
+  }
+
+  /* Mobile Floating Dock Active */
+  .mobile-mission-nav {
+    display: flex;
+  }
+
+  /* Dialog Full Sheet on Mobile */
+  .dialog-scrim {
+    padding: 0.75rem;
+    align-items: flex-end;
+  }
+
+  .dialog-frame {
+    border-radius: 22px 22px 14px 14px;
+    max-height: 85vh;
+  }
+
+  .dialog-top-bar {
+    padding: 1rem 1.25rem;
+  }
+
+  .dialog-body-area {
+    padding: 1.15rem;
+  }
+
+  .dialog-image-stage {
+    max-height: 240px;
+  }
+
+  .dialog-image-stage img {
+    max-height: 240px;
+  }
+}
+
+/* Extra Small Phones (< 380px) */
+@media (max-width: 380px) {
+  .mission-cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card-visual-port {
+    height: 180px;
+  }
 }

@@ -217,7 +217,7 @@ function renderItems() {
 
   if (filteredItems.length === 0) {
     container.innerHTML = `
-      <div style="text-align: center; padding: 3.5rem 1rem; background: #FFF; border-radius: 20px; border: 1px dashed #E2E8F0; width: 100%;">
+      <div style="text-align: center; padding: 3.5rem 1rem; background: var(--glass-surface); -webkit-backdrop-filter: var(--glass-blur); backdrop-filter: var(--glass-blur); border-radius: var(--radius-card); border: var(--glass-border); box-shadow: var(--glass-shadow-card); width: 100%;">
         <span style="font-size: 2.8rem;">🔍</span>
         <h3 style="margin-top: 0.6rem; color: #1F3864; font-size: 1.15rem;">ไม่พบรายการพัสดุตามเงื่อนไข</h3>
         <p style="color: #64748B; font-size: 0.9rem;">ลองค้นหาด้วยคำสำคัญอื่น หรือเลือกหมวดหมู่อื่นด้านบน</p>
@@ -418,16 +418,16 @@ function renderCartItems() {
     const imgSrc = item.image ? `images/${item.image}` : 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="%2394A3B8" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>';
 
     html += `
-      <div style="display: flex; align-items: center; gap: 0.8rem; padding: 0.8rem 0; border-bottom: 1px solid #E2E8F0;">
-        <img src="${imgSrc}" style="width: 44px; height: 44px; object-fit: cover; border-radius: 8px; border: 1px solid #E2E8F0;">
-        <div style="flex: 1;">
-          <h5 style="font-size: 0.9rem; font-weight: 700; color: #0F172A;">${item.name}</h5>
-          <span style="font-size: 0.76rem; color: #64748B;">${item.item_code} | มีในคลัง ${item.maxQty} ${item.unit}</span>
+      <div style="display: flex; align-items: center; gap: 0.8rem; padding: 0.85rem; margin-bottom: 0.65rem; background: rgba(255, 255, 255, 0.7); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.9); box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);">
+        <img src="${imgSrc}" style="width: 46px; height: 46px; object-fit: cover; border-radius: 10px; border: 1px solid rgba(226, 232, 240, 0.9);">
+        <div style="flex: 1; min-width: 0;">
+          <h5 style="font-size: 0.88rem; font-weight: 700; color: #0F172A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.name}</h5>
+          <span style="font-size: 0.74rem; color: #64748B;">${item.item_code} | คลัง: ${item.maxQty} ${item.unit}</span>
         </div>
-        <div style="display: flex; align-items: center; gap: 0.35rem;">
-          <input type="number" min="1" max="${item.maxQty}" value="${item.requestedQty}" style="width: 55px; padding: 0.35rem; border: 1px solid #CBD5E1; border-radius: 6px; text-align: center; font-weight: 700; color: #1F3864;" onchange="changeCartQty(${idx}, this.value)">
-          <span style="font-size: 0.8rem; color: #64748B;">${item.unit}</span>
-          <button style="background: none; border: none; color: #EF4444; font-size: 1.15rem; cursor: pointer; padding: 0.25rem;" onclick="removeFromCart(${idx})" title="ลบรายการ">✕</button>
+        <div style="display: flex; align-items: center; gap: 0.35rem; flex-shrink: 0;">
+          <input type="number" min="1" max="${item.maxQty}" value="${item.requestedQty}" style="width: 52px; padding: 0.35rem 0.2rem; border: 1px solid rgba(203, 213, 225, 0.9); border-radius: 8px; text-align: center; font-weight: 700; color: #1F3864; background: rgba(255, 255, 255, 0.9);" onchange="changeCartQty(${idx}, this.value)">
+          <span style="font-size: 0.78rem; color: #64748B;">${item.unit}</span>
+          <button style="background: none; border: none; color: #EF4444; font-size: 1.15rem; cursor: pointer; padding: 0.25rem; margin-left: 2px;" onclick="removeFromCart(${idx})" title="ลบรายการ">✕</button>
         </div>
       </div>
     `;
