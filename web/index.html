@@ -2,11 +2,8 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#F4F7FB">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <title>RTAFNC Supplies Glass Control — แผนกปกครอง วพอ.พอ.</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>RTAFNC Supplies Light Mission Control — แผนกปกครอง วพอ.พอ.</title>
   <link rel="icon" type="image/png" href="images/logo_rtafnc.png">
   <link rel="apple-touch-icon" href="images/logo_rtafnc.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -37,11 +34,19 @@
           <span class="status-ping"></span>
           <span>Google Drive ซิงค์เรียบร้อย</span>
         </div>
+        <button id="btnOpenReturnModal" class="btn-interactive btn-emerald" title="รายการที่กำลังยืมและบันทึกส่งคืนพัสดุ">
+          <span>🔄 คืนพัสดุ</span>
+          <span id="activeLoanBadge" class="cart-badge-pill" style="background:#EF4444;">0</span>
+        </button>
+        <button id="btnOpenTelegramModal" class="btn-interactive btn-gold" title="ตั้งค่าการแจ้งเตือน Telegram Bot">
+          <span>✈️ Telegram</span>
+          <span id="telegramStatusDot" style="width: 8px; height: 8px; border-radius: 50%; background: #10B981; display: inline-block;"></span>
+        </button>
         <a href="พัสดุปกครอง_๑๒๓_ระบบสมบูรณ์_OBE.xlsx" download class="btn-interactive btn-gold">
-          <span>📥</span> <span>ดาวน์โหลด Excel</span>
+          <span>📥</span> <span>Excel</span>
         </a>
         <button id="btnOpenMissionCart" class="btn-interactive btn-navy cart-btn">
-          <span>📋 ภารกิจขอเบิก</span>
+          <span>📋 ภารกิจขอยืม</span>
           <span id="cartCounterPill" class="cart-badge-pill">0</span>
         </button>
       </div>
@@ -277,6 +282,299 @@
         <button id="dialogAddToCartBtn" class="btn-interactive btn-navy" style="width: 100%; justify-content: center; padding: 0.8rem; font-size: 0.95rem;">
           + เพิ่มลงในภารกิจขอเบิก-ยืม
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Borrow Mission Modal Dialog (Selfie + 7-digit ID + Signature + Telegram) -->
+  <div id="borrowModalDialog" class="dialog-scrim">
+    <div class="dialog-frame" style="max-width: 620px;">
+      <div class="dialog-top-bar" style="background: linear-gradient(135deg, #1F3864 0%, #0F1F3D 100%); color: #FFF; border-radius: 24px 24px 0 0;">
+        <div>
+          <span style="font-size: 0.78rem; font-weight: 700; color: #D4AF37; text-transform: uppercase;">RTAFNC SUPPLY MISSION LOAN</span>
+          <h3 style="font-size: 1.25rem; font-weight: 700; color: #FFF;">📸 บันทึกการขอยืมพัสดุปกครอง</h3>
+        </div>
+        <button id="btnCloseBorrowModal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #FFF;">✕</button>
+      </div>
+      <div class="dialog-body-area" style="padding: 1.4rem;">
+
+        <!-- Step 1: Selfie Camera Capture -->
+        <div style="margin-bottom: 1.25rem;">
+          <label style="display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 0.92rem; color: #1F3864; margin-bottom: 0.45rem;">
+            <span>๑. ถ่ายภาพตนเองผู้ขอยืม (Selfie Verification) <span style="color: #EF4444;">*</span></span>
+            <span id="borrowCameraStatusBadge" class="id-validate-pill invalid">ยังไม่ได้ถ่ายภาพ</span>
+          </label>
+          <div class="camera-box-stage">
+            <div class="camera-overlay-badge">
+              <span style="width: 8px; height: 8px; border-radius: 50%; background: #10B981; display: inline-block;"></span>
+              <span>กล้องยืนยันตัวตน วพอ.</span>
+            </div>
+            <video id="borrowCameraVideo" class="camera-video-elem" autoplay playsinline muted></video>
+            <img id="borrowPhotoPreview" class="camera-preview-elem" alt="ภาพถ่ายตนเองผู้ยืม">
+            <canvas id="borrowCameraCanvas" style="display: none;"></canvas>
+          </div>
+          <div class="camera-controls-bar">
+            <button type="button" id="btnCaptureBorrowPhoto" class="btn-interactive btn-navy" style="flex: 1; justify-content: center;">
+              <span>📸 ถ่ายภาพตนเอง</span>
+            </button>
+            <button type="button" id="btnRetakeBorrowPhoto" class="btn-interactive btn-gold" style="display: none; justify-content: center;">
+              <span>🔄 ถ่ายใหม่</span>
+            </button>
+            <label class="btn-interactive" style="background: #E2E8F0; color: #334155; cursor: pointer; padding: 0.6rem 0.9rem;" title="หรืออัปโหลดรูปภาพจากอุปกรณ์">
+              <span>📁 แนบไฟล์ภาพ</span>
+              <input type="file" id="fileBorrowPhotoFallback" accept="image/*" capture="user" style="display: none;">
+            </label>
+          </div>
+        </div>
+
+        <!-- Step 2: Personal & Mission Information -->
+        <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 14px; padding: 1.1rem; margin-bottom: 1.25rem;">
+          <h5 style="color: #1F3864; font-size: 0.92rem; margin-bottom: 0.85rem; font-weight: 700;">๒. ข้อมูลระบุตัวตนและภารกิจ</h5>
+          
+          <div style="margin-bottom: 0.85rem;">
+            <label style="display: block; font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 0.3rem;">
+              ชื่อเต็ม (ยศ-ชื่อ สกุล / นพอ. ชั้นปี) <span style="color: #EF4444;">*</span>
+            </label>
+            <input type="text" id="borrowerFullName" class="mission-search-input" style="width: 100%;" placeholder="เช่น นพอ.หญิง กนกพร สว่างวงษ์ / จ.ท.พงศกร ใจดี" required>
+          </div>
+
+          <div style="margin-bottom: 0.85rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
+              <label style="font-size: 0.82rem; font-weight: 600; color: #334155;">
+                รหัสประจำตัว (ตัวเลข ๗ หลักพอดี) <span style="color: #EF4444;">*</span>
+              </label>
+              <span id="borrowCode7Badge" class="id-validate-pill invalid">ระบุ 0/7 หลัก</span>
+            </div>
+            <input type="text" id="borrowerCode7" maxlength="7" class="mission-search-input" style="width: 100%; font-family: monospace; font-size: 1.1rem; font-weight: 700; letter-spacing: 2px;" placeholder="เช่น 6801001" required>
+            <span style="font-size: 0.72rem; color: #64748B;">* ต้องเป็นตัวเลขอารบิก ๗ หลักสำหรับตรวจสอบทะเบียน นพอ.</span>
+          </div>
+
+          <div style="margin-bottom: 0.85rem;">
+            <label style="display: block; font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 0.3rem;">
+              ภารกิจ / วัตถุประสงค์ในการยืม <span style="color: #EF4444;">*</span>
+            </label>
+            <input type="text" id="borrowPurposeText" class="mission-search-input" style="width: 100%;" placeholder="เช่น การฝึกภาคสนาม นพอ. / จัดเตรียมงานพิธีการ / ประจำห้องเรียน" value="การฝึกทางทหารและภารกิจ วพอ." required>
+          </div>
+
+          <div>
+            <label style="display: block; font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 0.3rem;">
+              กำหนดวันส่งคืนพัสดุ
+            </label>
+            <input type="date" id="borrowReturnDueDate" class="mission-search-input" style="width: 100%;">
+          </div>
+        </div>
+
+        <!-- Step 3: Digital Signature Pad -->
+        <div style="margin-bottom: 1.25rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.45rem;">
+            <label style="font-weight: 700; font-size: 0.92rem; color: #1F3864;">
+              ๓. ลายมือชื่อผู้ขอยืม (Digital Signature) <span style="color: #EF4444;">*</span>
+            </label>
+            <button type="button" id="btnClearBorrowSig" style="background: none; border: none; color: #EF4444; font-size: 0.8rem; cursor: pointer; font-weight: 600;">
+              ล้างลายเซ็น ↺
+            </button>
+          </div>
+          <div class="sig-pad-wrapper">
+            <canvas id="borrowSigCanvas" class="sig-pad-canvas" width="560" height="135"></canvas>
+            <div class="sig-pad-footer">
+              <span>✍️ ใช้นิ้วหรือเมาส์เซ็นชื่อลงในกรอบ</span>
+              <span id="borrowSigStatus" style="color: #EF4444;">ยังไม่ได้เซ็นชื่อ</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4: Summary of Items to Borrow -->
+        <div style="background: rgba(2, 132, 199, 0.08); border: 1px solid rgba(2, 132, 199, 0.25); border-radius: 12px; padding: 0.9rem; margin-bottom: 1.25rem;">
+          <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; color: #0369A1; margin-bottom: 0.35rem;">
+            <span>รายการพัสดุที่ขอยืม:</span>
+            <span id="borrowItemsCountSummary">0 รายการ (0 หน่วยนับ)</span>
+          </div>
+          <div id="borrowItemsSummaryList" style="font-size: 0.8rem; color: #334155; max-height: 80px; overflow-y: auto; line-height: 1.6;">
+            <!-- Items injected by JS -->
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button id="btnExecuteBorrowConfirm" class="btn-interactive btn-gold" style="width: 100%; justify-content: center; padding: 0.9rem; font-size: 1.05rem;">
+          <span>🚀 ยืนยันการยืม & แจ้งเตือน Telegram & พิมพ์ใบยืม</span>
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Return Supplies Modal Dialog (Active Loans & Return Verification) -->
+  <div id="returnModalDialog" class="dialog-scrim">
+    <div class="dialog-frame" style="max-width: 680px;">
+      <div class="dialog-top-bar" style="background: linear-gradient(135deg, #059669 0%, #064E3B 100%); color: #FFF; border-radius: 24px 24px 0 0;">
+        <div>
+          <span style="font-size: 0.78rem; font-weight: 700; color: #86EFAC; text-transform: uppercase;">RTAFNC SUPPLY RETURN VERIFICATION</span>
+          <h3 style="font-size: 1.25rem; font-weight: 700; color: #FFF;">🔄 ศูนย์ส่งคืนพัสดุปกครอง วพอ.</h3>
+        </div>
+        <button id="btnCloseReturnModal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #FFF;">✕</button>
+      </div>
+      <div class="dialog-body-area" style="padding: 1.4rem;">
+
+        <!-- Active Loans List Stage -->
+        <div id="activeLoansStage">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">
+            <h5 style="color: #1F3864; font-size: 0.95rem; font-weight: 700;">📋 รายการที่กำลังถูกยืมอยู่ในขณะนี้</h5>
+            <input type="text" id="filterReturnLoansInput" placeholder="ค้นหาชื่อ หรือ รหัส ๗ หลัก..." class="mission-search-input" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; width: 220px;">
+          </div>
+          <div id="activeLoansListContainer" style="max-height: 280px; overflow-y: auto; margin-bottom: 1rem;">
+            <!-- Injected by app.js -->
+          </div>
+        </div>
+
+        <!-- Return Form Action Stage (Hidden until an item is selected to return) -->
+        <div id="returnFormStage" style="display: none; border-top: 2px dashed #CBD5E1; padding-top: 1.25rem; margin-top: 0.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">
+            <h4 style="color: #064E3B; font-weight: 700; font-size: 1.05rem;">
+              <span>📦 กำลังส่งคืนรายการ: </span>
+              <span id="returningItemTitleText" style="color: #0284C7;">-</span>
+            </h4>
+            <button type="button" id="btnCancelReturnSelection" style="background: none; border: none; color: #64748B; font-size: 0.85rem; cursor: pointer; text-decoration: underline;">
+              ย้อนกลับ
+            </button>
+          </div>
+
+          <!-- Step 1: Return Selfie -->
+          <div style="margin-bottom: 1.25rem;">
+            <label style="display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 0.9rem; color: #064E3B; margin-bottom: 0.45rem;">
+              <span>๑. ถ่ายภาพตนเองขณะส่งคืนพัสดุ (Return Selfie) <span style="color: #EF4444;">*</span></span>
+              <span id="returnCameraStatusBadge" class="id-validate-pill invalid">ยังไม่ได้ถ่ายภาพ</span>
+            </label>
+            <div class="camera-box-stage">
+              <div class="camera-overlay-badge" style="background: rgba(6, 78, 59, 0.85);">
+                <span style="width: 8px; height: 8px; border-radius: 50%; background: #10B981; display: inline-block;"></span>
+                <span>กล้องส่งคืนพัสดุ วพอ.</span>
+              </div>
+              <video id="returnCameraVideo" class="camera-video-elem" autoplay playsinline muted></video>
+              <img id="returnPhotoPreview" class="camera-preview-elem" alt="ภาพถ่ายตนเองผู้คืน">
+              <canvas id="returnCameraCanvas" style="display: none;"></canvas>
+            </div>
+            <div class="camera-controls-bar">
+              <button type="button" id="btnCaptureReturnPhoto" class="btn-interactive btn-emerald" style="flex: 1; justify-content: center;">
+                <span>📸 ถ่ายภาพส่งคืนตนเอง</span>
+              </button>
+              <button type="button" id="btnRetakeReturnPhoto" class="btn-interactive btn-gold" style="display: none; justify-content: center;">
+                <span>🔄 ถ่ายใหม่</span>
+              </button>
+              <label class="btn-interactive" style="background: #E2E8F0; color: #334155; cursor: pointer; padding: 0.6rem 0.9rem;">
+                <span>📁 แนบไฟล์</span>
+                <input type="file" id="fileReturnPhotoFallback" accept="image/*" capture="user" style="display: none;">
+              </label>
+            </div>
+          </div>
+
+          <!-- Step 2: Returner Identity Verification -->
+          <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 14px; padding: 1.1rem; margin-bottom: 1.25rem;">
+            <h5 style="color: #064E3B; font-size: 0.92rem; margin-bottom: 0.85rem; font-weight: 700;">๒. ข้อมูลผู้ส่งคืนและสภาพพัสดุ</h5>
+            
+            <div style="margin-bottom: 0.85rem;">
+              <label style="display: block; font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 0.3rem;">
+                ชื่อเต็มผู้ส่งคืน (ยศ-ชื่อ สกุล / นพอ.) <span style="color: #EF4444;">*</span>
+              </label>
+              <input type="text" id="returnerFullName" class="mission-search-input" style="width: 100%;" placeholder="เช่น นพอ.หญิง กนกพร สว่างวงษ์" required>
+            </div>
+
+            <div style="margin-bottom: 0.85rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
+                <label style="font-size: 0.82rem; font-weight: 600; color: #334155;">
+                  รหัสประจำตัว ๗ หลัก <span style="color: #EF4444;">*</span>
+                </label>
+                <span id="returnCode7Badge" class="id-validate-pill invalid">ระบุ 0/7 หลัก</span>
+              </div>
+              <input type="text" id="returnerCode7" maxlength="7" class="mission-search-input" style="width: 100%; font-family: monospace; font-size: 1.1rem; font-weight: 700; letter-spacing: 2px;" placeholder="เช่น 6801001" required>
+            </div>
+
+            <div style="margin-bottom: 0.85rem;">
+              <label style="display: block; font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 0.3rem;">
+                สภาพพัสดุที่ส่งคืน <span style="color: #EF4444;">*</span>
+              </label>
+              <select id="returnConditionSelect" class="mission-search-input" style="width: 100%; font-weight: 600;">
+                <option value="สมบูรณ์ ๑๐๐%">✅ สมบูรณ์ ๑๐๐% พร้อมใช้งานทันที</option>
+                <option value="ชำรุดเล็กน้อย">⚠️ ชำรุดเล็กน้อย (ต้องซ่อมแซม/ทำความสะอาด)</option>
+                <option value="ชำรุดหนัก/สูญหาย">❌ ชำรุดหนัก / ชิ้นส่วนสูญหาย (ต้องทำรายงาน)</option>
+              </select>
+            </div>
+
+            <div>
+              <label style="display: block; font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 0.3rem;">
+                หมายเหตุการส่งคืน (ถ้ามี)
+              </label>
+              <input type="text" id="returnNotesInput" class="mission-search-input" style="width: 100%;" placeholder="เช่น ทำความสะอาดเรียบร้อย, ส่งคืนครบตามจำนวน">
+            </div>
+          </div>
+
+          <!-- Step 3: Return Digital Signature -->
+          <div style="margin-bottom: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.45rem;">
+              <label style="font-weight: 700; font-size: 0.92rem; color: #064E3B;">
+                ๓. ลายมือชื่อผู้ส่งคืน (Return Signature) <span style="color: #EF4444;">*</span>
+              </label>
+              <button type="button" id="btnClearReturnSig" style="background: none; border: none; color: #EF4444; font-size: 0.8rem; cursor: pointer; font-weight: 600;">
+                ล้างลายเซ็น ↺
+              </button>
+            </div>
+            <div class="sig-pad-wrapper">
+              <canvas id="returnSigCanvas" class="sig-pad-canvas" width="560" height="135"></canvas>
+              <div class="sig-pad-footer">
+                <span>✍️ ใช้นิ้วหรือเมาส์เซ็นชื่อยืนยันการคืน</span>
+                <span id="returnSigStatus" style="color: #EF4444;">ยังไม่ได้เซ็นชื่อ</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit Return Button -->
+          <button id="btnExecuteReturnConfirm" class="btn-interactive btn-emerald" style="width: 100%; justify-content: center; padding: 0.9rem; font-size: 1.05rem;">
+            <span>✅ ยืนยันการส่งคืน & แจ้งเตือน Telegram & พิมพ์ใบรับคืน</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Telegram Bot Notification Settings Dialog -->
+  <div id="telegramModalDialog" class="dialog-scrim">
+    <div class="dialog-frame" style="max-width: 540px;">
+      <div class="dialog-top-bar" style="background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%); color: #FFF; border-radius: 24px 24px 0 0;">
+        <div>
+          <span style="font-size: 0.78rem; font-weight: 700; color: #FEF3C7; text-transform: uppercase;">TELEGRAM BOT INTEGRATION</span>
+          <h3 style="font-size: 1.25rem; font-weight: 700; color: #FFF;">✈️ ตั้งค่าการแจ้งเตือน Telegram</h3>
+        </div>
+        <button id="btnCloseTelegramModal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #FFF;">✕</button>
+      </div>
+      <div class="dialog-body-area" style="padding: 1.4rem;">
+        <p style="font-size: 0.85rem; color: #64748B; margin-bottom: 1.15rem; line-height: 1.5;">
+          ระบบจะส่งภาพถ่ายตนเอง (Selfie), รหัส ๗ หลัก, ชื่อผู้ยืม/คืน, และลายเซ็นต์ ไปยังกลุ่มหรือบัญชี Telegram เพื่อให้ผู้บังคับบัญชาและเจ้าหน้าที่อนุมัติแบบ Real-time
+        </p>
+
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem;">
+            Telegram Bot Token
+          </label>
+          <input type="text" id="telegramBotTokenInput" class="mission-search-input" style="width: 100%; font-family: monospace; font-size: 0.88rem;" placeholder="เช่น 123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ">
+          <span style="font-size: 0.72rem; color: #64748B;">สร้าง Bot ได้ฟรีจาก @BotFather บน Telegram</span>
+        </div>
+
+        <div style="margin-bottom: 1.25rem;">
+          <label style="display: block; font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem;">
+            Telegram Chat ID (กลุ่ม หรือ ส่วนตัว)
+          </label>
+          <input type="text" id="telegramChatIdInput" class="mission-search-input" style="width: 100%; font-family: monospace; font-size: 0.88rem;" placeholder="เช่น -1001234567890 หรือ 987654321">
+          <span style="font-size: 0.72rem; color: #64748B;">ดู Chat ID ได้จาก @userinfobot หรือเพิ่มบอทเข้ากลุ่มแล้วพิมพ์ /start</span>
+        </div>
+
+        <div style="display: flex; gap: 0.6rem; margin-top: 1.25rem;">
+          <button type="button" id="btnTestTelegramAlert" class="btn-interactive btn-gold" style="flex: 1; justify-content: center;">
+            <span>🔔 ทดสอบส่งข้อความ</span>
+          </button>
+          <button type="button" id="btnSaveTelegramConfig" class="btn-interactive btn-navy" style="flex: 1; justify-content: center;">
+            <span>💾 บันทึกการตั้งค่า</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
