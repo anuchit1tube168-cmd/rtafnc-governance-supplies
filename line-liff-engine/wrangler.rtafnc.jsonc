@@ -1,0 +1,21 @@
+{
+  "name": "rtafnc-governance-liff-staging",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-21",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "rtafnc-governance-liff-staging",
+      "database_id": "REPLACE_WITH_STAGING_D1_DATABASE_ID"
+    }
+  ],
+  "vars": {
+    "ENVIRONMENT": "staging",
+    "PRODUCTION_WRITE": "false",
+    "RTAFNC_SYSTEM_NAME": "RTAFNC Governance Supplies / Uniform Control"
+  }
+}
