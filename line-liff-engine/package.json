@@ -1,5 +1,5 @@
 {
-  "name": "line-stock",
+  "name": "rtafnc-governance-liff",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -15,7 +15,11 @@
     "tail": "wrangler tail",
     "deploy:mine": "wrangler deploy -c wrangler.prod.jsonc",
     "db:migrate:mine": "wrangler d1 migrations apply line-stock --remote -c wrangler.prod.jsonc",
-    "db:seed:mine": "wrangler d1 execute line-stock --remote --file=./seed.sql -c wrangler.prod.jsonc"
+    "db:seed:mine": "wrangler d1 execute line-stock --remote --file=./seed.sql -c wrangler.prod.jsonc",
+    "dev:rtafnc": "wrangler dev --config wrangler.rtafnc.jsonc",
+    "deploy:rtafnc": "wrangler deploy --config wrangler.rtafnc.jsonc",
+    "db:migrate:rtafnc": "wrangler d1 migrations apply rtafnc-governance-liff-staging --remote --config wrangler.rtafnc.jsonc",
+    "db:migrate:rtafnc:local": "wrangler d1 migrations apply rtafnc-governance-liff-staging --local --config wrangler.rtafnc.jsonc"
   },
   "dependencies": {
     "hono": "^4.6.14"
