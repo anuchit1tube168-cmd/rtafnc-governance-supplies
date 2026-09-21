@@ -38,8 +38,8 @@
           <span>🔄 คืนพัสดุ</span>
           <span id="activeLoanBadge" class="cart-badge-pill" style="background:#EF4444;">0</span>
         </button>
-        <button id="btnOpenTelegramModal" class="btn-interactive btn-gold" title="ตั้งค่าการแจ้งเตือน Telegram Bot">
-          <span>✈️ Telegram</span>
+        <button id="btnOpenTelegramModal" class="btn-interactive btn-gold" title="ตั้งค่าเชื่อมต่อ Google Sheets & Telegram Bot">
+          <span>☁️ Cloud & Bot</span>
           <span id="telegramStatusDot" style="width: 8px; height: 8px; border-radius: 50%; background: #10B981; display: inline-block;"></span>
         </button>
         <a href="พัสดุปกครอง_๑๒๓_ระบบสมบูรณ์_OBE.xlsx" download class="btn-interactive btn-gold">
@@ -536,27 +536,47 @@
     </div>
   </div>
 
-  <!-- Telegram Bot Notification Settings Dialog -->
+  <!-- Cloud & Telegram Notification Settings Dialog -->
   <div id="telegramModalDialog" class="dialog-scrim">
-    <div class="dialog-frame" style="max-width: 540px;">
-      <div class="dialog-top-bar" style="background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%); color: #FFF; border-radius: 24px 24px 0 0;">
+    <div class="dialog-frame" style="max-width: 580px;">
+      <div class="dialog-top-bar" style="background: linear-gradient(135deg, #1F3864 0%, #0369A1 100%); color: #FFF; border-radius: 24px 24px 0 0;">
         <div>
-          <span style="font-size: 0.78rem; font-weight: 700; color: #FEF3C7; text-transform: uppercase;">TELEGRAM BOT INTEGRATION</span>
-          <h3 style="font-size: 1.25rem; font-weight: 700; color: #FFF;">✈️ ตั้งค่าการแจ้งเตือน Telegram</h3>
+          <span style="font-size: 0.78rem; font-weight: 700; color: #FEF3C7; text-transform: uppercase;">CLOUD DATABASE & NOTIFICATION INTEGRATION</span>
+          <h3 style="font-size: 1.25rem; font-weight: 700; color: #FFF;">☁️ เชื่อมต่อ Google Sheets & Telegram</h3>
         </div>
         <button id="btnCloseTelegramModal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: #FFF;">✕</button>
       </div>
       <div class="dialog-body-area" style="padding: 1.4rem;">
         <p style="font-size: 0.85rem; color: #64748B; margin-bottom: 1.15rem; line-height: 1.5;">
-          ระบบจะส่งภาพถ่ายตนเอง (Selfie), รหัส ๗ หลัก, ชื่อผู้ยืม/คืน, และลายเซ็นต์ ไปยังกลุ่มหรือบัญชี Telegram เพื่อให้ผู้บังคับบัญชาและเจ้าหน้าที่อนุมัติแบบ Real-time
+          ระบบจะบันทึกประวัติการยืม-คืนลงใน <strong>Google Sheets</strong> ฐานข้อมูลกลาง และบันทึกภาพถ่ายยืนยันตัวตน (Selfie) ลง <strong>Google Drive</strong> พร้อมแจ้งเตือนไปยังกลุ่ม <strong>Telegram</strong> แบบ Real-time
         </p>
+
+        <!-- Google Apps Script Webhook URL -->
+        <div style="margin-bottom: 1.15rem; background: #F8FAFC; border: 1px solid #E2E8F0; padding: 0.9rem; border-radius: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+            <label style="font-size: 0.82rem; font-weight: 700; color: #1F3864;">
+              🔗 Google Apps Script Web App URL (Backend API)
+            </label>
+            <span id="gasStatusBadge" style="font-size: 0.72rem; background: #DCFCE7; color: #166534; font-weight: 700; padding: 2px 8px; border-radius: 999px;">พร้อมเชื่อมต่อ</span>
+          </div>
+          <input type="text" id="gasWebhookUrlInput" class="mission-search-input" style="width: 100%; font-family: monospace; font-size: 0.82rem;" placeholder="https://script.google.com/macros/s/.../exec">
+          <div style="margin-top: 0.4rem; display: flex; gap: 0.8rem; font-size: 0.75rem;">
+            <a href="https://docs.google.com/spreadsheets/d/1IKLmbe_JqEacmTF6Mkl0tuB3eHJhTGdyW-p7cICAptI/edit" target="_blank" style="color: #0284C7; font-weight: 600; text-decoration: underline;">
+              📊 เปิดตาราง Google Sheets กลาง
+            </a>
+            <span style="color: #CBD5E1;">|</span>
+            <a href="https://script.google.com/home/projects/1XlMO8Lt0hirhPrkpML9cjVS2PwfiGY-WjjaKueSQb76-VnSCwcCYbBNA/edit" target="_blank" style="color: #0284C7; font-weight: 600; text-decoration: underline;">
+              ⚙️ เปิด Google Apps Script
+            </a>
+          </div>
+        </div>
 
         <div style="margin-bottom: 1rem;">
           <label style="display: block; font-size: 0.82rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem;">
             Telegram Bot Token
           </label>
           <input type="text" id="telegramBotTokenInput" class="mission-search-input" style="width: 100%; font-family: monospace; font-size: 0.88rem;" placeholder="เช่น 123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ">
-          <span style="font-size: 0.72rem; color: #64748B;">สร้าง Bot ได้ฟรีจาก @BotFather บน Telegram</span>
+          <span style="font-size: 0.72rem; color: #64748B;">สร้างบอทได้ฟรีจาก @BotFather บน Telegram</span>
         </div>
 
         <div style="margin-bottom: 1.25rem;">
@@ -569,7 +589,7 @@
 
         <div style="display: flex; gap: 0.6rem; margin-top: 1.25rem;">
           <button type="button" id="btnTestTelegramAlert" class="btn-interactive btn-gold" style="flex: 1; justify-content: center;">
-            <span>🔔 ทดสอบส่งข้อความ</span>
+            <span>🔔 ทดสอบระบบ</span>
           </button>
           <button type="button" id="btnSaveTelegramConfig" class="btn-interactive btn-navy" style="flex: 1; justify-content: center;">
             <span>💾 บันทึกการตั้งค่า</span>

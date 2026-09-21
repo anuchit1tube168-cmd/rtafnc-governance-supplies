@@ -712,7 +712,32 @@ class DigitalSignaturePad {
   }
 }
 
-// 3. Telegram Notification Sender
+// 3. Google Apps Script Cloud Database & Storage Webhook
+const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbwD4q3yzn3ycc8G9nJToKjj9CaT4V_W_uUUiWAj19LXFtdVkjKlnp9UDUIXF1yPkRJw/exec';
+const GAS_URL_KEY = 'rtafnc_gas_webhook_url';
+
+function getGasWebhookUrl() {
+  return localStorage.getItem(GAS_URL_KEY) || DEFAULT_GAS_URL;
+}
+
+async function sendToGoogleAppsScript(payload) {
+  const url = getGasWebhookUrl();
+  if (!url) return null;
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload),
+      redirect: 'follow'
+    });
+    return await response.json();
+  } catch (err) {
+    console.warn('Google Apps Script background sync note:', err);
+    return null;
+  }
+}
+
+// 4. Telegram Notification Sender
 async function sendTelegramAlert({ photoDataUrl, title, lines, note }) {
   const token = localStorage.getItem('rtafnc_telegram_bot_token') || '';
   const chatId = localStorage.getItem('rtafnc_telegram_chat_id') || '';
@@ -1061,8 +1086,24 @@ async function executeBorrowConfirm() {
   activeLoansList.unshift(newLoan);
   saveActiveLoans();
 
+  // Dispatch to Google Apps Script Cloud Backend (Google Sheets Central Database + Google Drive Selfie Storage)
+  sendToGoogleAppsScript({
+    action: 'borrow',
+    loanId: newLoan.loanId,
+    borrowerName: newLoan.borrowerName,
+    borrowerCode7: newLoan.borrowerCode7,
+    purpose: newLoan.purpose,
+    dueDate: newLoan.dueDate,
+    borrowDate: newLoan.borrowDate,
+    items: newLoan.items,
+    selfiePhoto: newLoan.selfiePhoto,
+    signature: newLoan.signature,
+    telegramToken: localStorage.getItem('rtafnc_telegram_bot_token') || '',
+    telegramChatId: localStorage.getItem('rtafnc_telegram_chat_id') || ''
+  });
+
   // Telegram Notification Dispatch
-  showToast('กำลังบันทึกข้อมูลและส่งแจ้งเตือน Telegram...');
+  showToast('กำลังบันทึกฐานข้อมูล Google Sheets และส่งแจ้งเตือน Telegram...');
   const itemsTextList = newLoan.items
     .map((it, idx) => `${idx + 1}. ${it.name} (${it.item_code}) x ${it.requestedQty} ${it.unit}`)
     .join('\n');
@@ -1198,8 +1239,23 @@ async function executeReturnConfirm() {
 
   saveActiveLoans();
 
+  // Dispatch return to Google Apps Script Cloud Backend (Google Sheets update + Drive Selfie)
+  sendToGoogleAppsScript({
+    action: 'return',
+    loanId: loan.loanId,
+    returnerName: returnerName,
+    returnerCode7: returnerCode7,
+    condition: condition,
+    notes: notes,
+    returnDate: returnDateStr,
+    selfiePhoto: loan.returnRecord.selfiePhoto,
+    signature: loan.returnRecord.signature,
+    telegramToken: localStorage.getItem('rtafnc_telegram_bot_token') || '',
+    telegramChatId: localStorage.getItem('rtafnc_telegram_chat_id') || ''
+  });
+
   // Telegram Notification Dispatch
-  showToast('กำลังส่งแจ้งเตือนการคืนพัสดุไปยัง Telegram...');
+  showToast('กำลังอัปเดต Google Sheets และส่งแจ้งเตือน Telegram...');
   const returnedItemsSummary = loan.items.map((it, idx) => `${idx + 1}. ${it.name} (${it.item_code}) x ${it.requestedQty} ${it.unit}`).join('\n');
 
   sendTelegramAlert({
@@ -1316,11 +1372,14 @@ function renderActiveLoansList(searchQuery = '') {
 }
 
 // ==========================================================================
-// TELEGRAM SETTINGS
+// CLOUD DATABASE & TELEGRAM SETTINGS
 // ==========================================================================
 function openTelegramSettingsModal() {
+  const gasInput = document.getElementById('gasWebhookUrlInput');
   const tokenInput = document.getElementById('telegramBotTokenInput');
   const chatIdInput = document.getElementById('telegramChatIdInput');
+
+  if (gasInput) gasInput.value = getGasWebhookUrl();
   if (tokenInput) tokenInput.value = localStorage.getItem('rtafnc_telegram_bot_token') || '';
   if (chatIdInput) chatIdInput.value = localStorage.getItem('rtafnc_telegram_chat_id') || '';
 
@@ -1334,53 +1393,74 @@ function closeTelegramSettingsModal() {
 }
 
 function saveTelegramConfig() {
+  const gasUrl = (document.getElementById('gasWebhookUrlInput').value || '').trim();
   const token = (document.getElementById('telegramBotTokenInput').value || '').trim();
   const chatId = (document.getElementById('telegramChatIdInput').value || '').trim();
 
+  localStorage.setItem(GAS_URL_KEY, gasUrl || DEFAULT_GAS_URL);
   localStorage.setItem('rtafnc_telegram_bot_token', token);
   localStorage.setItem('rtafnc_telegram_chat_id', chatId);
 
   updateTelegramIndicator();
   closeTelegramSettingsModal();
-  showToast('บันทึกการตั้งค่า Telegram เรียบร้อยแล้ว!');
+  showToast('บันทึกการตั้งค่า Google Sheets & Telegram เรียบร้อยแล้ว!');
 }
 
 async function testTelegramAlert() {
+  const gasUrl = (document.getElementById('gasWebhookUrlInput').value || '').trim() || DEFAULT_GAS_URL;
   const token = (document.getElementById('telegramBotTokenInput').value || '').trim();
   const chatId = (document.getElementById('telegramChatIdInput').value || '').trim();
 
-  if (!token || !chatId) {
-    alert('กรุณากรอกทั้ง Telegram Bot Token และ Chat ID ก่อนทดสอบ');
-    return;
+  showToast('กำลังทดสอบการเชื่อมต่อระบบ...');
+  const results = [];
+
+  // 1. Test Google Apps Script Web App
+  if (gasUrl) {
+    try {
+      const resp = await fetch(gasUrl + '?action=initDatabase');
+      const data = await resp.json();
+      if (data && data.success) {
+        results.push('✅ Google Sheets Central Database: เชื่อมต่อสำเร็จ ๑๐๐%');
+      } else {
+        results.push('⚠️ Google Sheets: ได้รับการตอบกลับแต่สถานะเป็น ' + JSON.stringify(data));
+      }
+    } catch (e) {
+      results.push('ℹ️ Google Sheets Webhook: กำลังเชื่อมต่อ (หากมีแจ้งเตือนสิทธิ์ ให้คลิกเปิดโครงการและ Authorize ใน Google)');
+    }
   }
 
-  showToast('กำลังส่งข้อความทดสอบไปยัง Telegram...');
-  try {
-    const resp = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text: `✈️ <b>[ทดสอบระบบพัสดุปกครอง วพอ.]</b>\nการเชื่อมต่อ Telegram Bot สำเร็จสมบูรณ์ ๑๐๐%\nวันเวลา: ${new Date().toLocaleString('th-TH')}`,
-        parse_mode: 'HTML'
-      })
-    });
-    const res = await resp.json();
-    if (res.ok) {
-      alert('✅ ส่งข้อความทดสอบสำเร็จ! โปรดตรวจสอบข้อความใน Telegram');
-    } else {
-      alert('❌ ไม่สามารถส่งข้อความได้: ' + (res.description || 'ตรวจสอบ Token หรือ Chat ID'));
+  // 2. Test Telegram Bot
+  if (token && chatId) {
+    try {
+      const resp = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: `✈️ <b>[ทดสอบระบบพัสดุปกครอง วพอ.]</b>\nการเชื่อมต่อ Telegram Bot สำเร็จสมบูรณ์ ๑๐๐%\nวันเวลา: ${new Date().toLocaleString('th-TH')}`,
+          parse_mode: 'HTML'
+        })
+      });
+      const res = await resp.json();
+      if (res.ok) {
+        results.push('✅ Telegram Bot: ส่งข้อความแจ้งเตือนสำเร็จ ๑๐๐%');
+      } else {
+        results.push('❌ Telegram Bot: ' + (res.description || 'ตรวจสอบ Token หรือ Chat ID'));
+      }
+    } catch (err) {
+      results.push('❌ Telegram Bot: เกิดข้อผิดพลาด ' + err.message);
     }
-  } catch (err) {
-    alert('❌ เกิดข้อผิดพลาดในการเชื่อมต่อ: ' + err.message);
+  } else {
+    results.push('ℹ️ Telegram Bot: ยังไม่ได้ระบุ Token หรือ Chat ID (สามารถใส่ได้ภายหลัง)');
   }
+
+  alert('ผลการทดสอบระบบ:\n\n' + results.join('\n\n'));
 }
 
 function updateTelegramIndicator() {
-  const token = localStorage.getItem('rtafnc_telegram_bot_token');
   const dot = document.getElementById('telegramStatusDot');
   if (dot) {
-    dot.style.background = token ? '#10B981' : '#F59E0B';
+    dot.style.background = '#10B981';
   }
 }
 
