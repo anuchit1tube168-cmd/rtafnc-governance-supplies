@@ -19,14 +19,32 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function loadData() {
   try {
     const res = await fetch('data.json');
-    allItems = await res.json();
+    if (!res.ok) {
+      throw new Error(`โหลดข้อมูลไม่สำเร็จ (HTTP ${res.status})`);
+    }
+
+    const data = await res.json();
+    if (!Array.isArray(data)) {
+      throw new Error('รูปแบบข้อมูลพัสดุไม่ถูกต้อง');
+    }
+
+    allItems = data.map(item => ({
+      ...item,
+      item_code: String(item.item_code ?? ''),
+      name: String(item.name ?? ''),
+      category_id: Number(item.category_id) || 0,
+      category_name: String(item.category_name ?? ''),
+      unit: String(item.unit ?? ''),
+      qty: Number(item.qty) || 0
+    }));
     filteredItems = [...allItems];
     updateKPISummaries();
     renderItems();
     renderSupplyRadar();
   } catch (err) {
     console.error('Error loading data:', err);
-    document.getElementById('itemsContainer').innerHTML = `
+    const container = document.getElementById('itemsContainer');
+    if (container) container.innerHTML = `
       <div style="text-align: center; padding: 3rem; background: #FFF; border-radius: 20px; border: 1px dashed #E2E8F0;">
         <span style="font-size: 2.5rem;">⚠️</span>
         <h3 style="margin-top: 0.5rem; color: #1F3864;">เกิดข้อผิดพลาดในการโหลดข้อมูล</h3>
@@ -371,10 +389,18 @@ function addToCart(id) {
   const item = allItems.find(x => x.id === id);
   if (!item) return;
 
+  const maxQty = Math.max(0, Number(item.qty) || 0);
+  if (maxQty < 1) {
+    showToast('พัสดุรายการนี้ไม่มีคงเหลือสำหรับขอยืม');
+    return;
+  }
+
   const existing = requisitionCart.find(x => x.id === id);
   if (existing) {
-    if (existing.requestedQty < item.qty) {
+    if (existing.requestedQty < maxQty) {
       existing.requestedQty += 1;
+    } else {
+      showToast(`ขอได้สูงสุด ${maxQty} ${item.unit}`);
     }
   } else {
     requisitionCart.push({
@@ -382,7 +408,7 @@ function addToCart(id) {
       item_code: item.item_code,
       name: item.name,
       unit: item.unit,
-      maxQty: item.qty,
+      maxQty,
       requestedQty: 1,
       image: item.image
     });
@@ -440,8 +466,10 @@ function renderCartItems() {
 }
 
 function changeCartQty(index, newQty) {
-  const val = parseInt(newQty) || 1;
   const item = requisitionCart[index];
+  if (!item) return;
+
+  const val = parseInt(newQty, 10) || 1;
   if (val > item.maxQty) {
     item.requestedQty = item.maxQty;
   } else if (val < 1) {
@@ -454,6 +482,7 @@ function changeCartQty(index, newQty) {
 }
 
 function removeFromCart(index) {
+  if (!requisitionCart[index]) return;
   requisitionCart.splice(index, 1);
   updateCartBadge();
   renderCartItems();
@@ -580,9 +609,15 @@ class SelfieCamera {
   }
 
   capture(watermarkPrefix = 'วพอ.พอ. ยืนยันตัวตน') {
-    if (!this.video || !this.canvas) return null;
-    const width = this.video.videoWidth || 640;
-    const height = this.video.videoHeight || 480;
+    if (!this.video || !this.canvas || !this.stream || !this.video.videoWidth || !this.video.videoHeight) {
+      if (this.statusBadge) {
+        this.statusBadge.className = 'id-validate-pill invalid';
+        this.statusBadge.textContent = 'กล้องยังไม่พร้อม กรุณาแนบไฟล์ภาพ';
+      }
+      return null;
+    }
+    const width = this.video.videoWidth;
+    const height = this.video.videoHeight;
     this.canvas.width = width;
     this.canvas.height = height;
     const ctx = this.canvas.getContext('2d');
@@ -614,6 +649,14 @@ class SelfieCamera {
   }
 
   setPhotoData(dataUrl) {
+    if (typeof dataUrl !== 'string' || !dataUrl.startsWith('data:image/')) {
+      if (this.statusBadge) {
+        this.statusBadge.className = 'id-validate-pill invalid';
+        this.statusBadge.textContent = 'ไฟล์ภาพไม่ถูกต้อง';
+      }
+      return;
+    }
+
     this.photoDataUrl = dataUrl;
     if (this.preview) {
       this.preview.src = dataUrl;
@@ -730,10 +773,19 @@ async function sendToGoogleAppsScript(payload) {
       body: JSON.stringify(payload),
       redirect: 'follow'
     });
-    return await response.json();
+    if (!response.ok) {
+      throw new Error(`Google Apps Script ตอบกลับ HTTP ${response.status}`);
+    }
+
+    const result = await response.json();
+    if (!result || result.success !== true) {
+      console.error('Google Apps Script rejected payload:', result);
+      return result || { success: false, error: 'ไม่ได้รับผลลัพธ์จาก Google Apps Script' };
+    }
+    return result;
   } catch (err) {
-    console.warn('Google Apps Script background sync note:', err);
-    return null;
+    console.error('Google Apps Script sync failed:', err);
+    return { success: false, error: err.message };
   }
 }
 
@@ -770,7 +822,8 @@ async function sendTelegramAlert({ photoDataUrl, title, lines, note }) {
           body: formData
         });
         const data = await resp.json();
-        return data;
+        if (resp.ok && data.ok) return data;
+        console.error('Telegram sendPhoto failed:', data);
       }
     }
 
@@ -785,6 +838,9 @@ async function sendTelegramAlert({ photoDataUrl, title, lines, note }) {
       })
     });
     const data = await resp.json();
+    if (!resp.ok || !data.ok) {
+      console.error('Telegram sendMessage failed:', data);
+    }
     return data;
   } catch (err) {
     console.error('Telegram dispatch error:', err);
@@ -850,7 +906,7 @@ function initBorrowAndReturnWorkflow() {
   const btnClearBorrowSig = document.getElementById('btnClearBorrowSig');
   if (btnClearBorrowSig) {
     btnClearBorrowSig.addEventListener('click', () => {
-      borrowSigPad.clear();
+      if (borrowSigPad) borrowSigPad.clear();
     });
   }
 
@@ -1021,7 +1077,9 @@ function handleRequisitionSubmit() {
   // Open modal and start camera
   const modal = document.getElementById('borrowModalDialog');
   if (modal) modal.classList.add('active');
-  borrowCamera.start();
+  if (borrowCamera) {
+    borrowCamera.start();
+  }
 }
 
 function closeBorrowModal() {
@@ -1057,7 +1115,7 @@ async function executeBorrowConfirm() {
   const purpose = (document.getElementById('borrowPurposeText').value || '').trim() || 'การฝึกทางทหารและภารกิจ วพอ.';
 
   // 5. Validate Signature
-  if (!borrowSigPad.hasDrawn) {
+  if (!borrowSigPad || !borrowSigPad.hasDrawn) {
     alert('⚠️ กรุณาลงลายมือชื่อดิจิทัลในกรอบให้เรียบร้อย');
     return;
   }
@@ -1076,7 +1134,7 @@ async function executeBorrowConfirm() {
     dueDate: dueDateVal,
     borrowDate: createdDateStr,
     timestamp: Date.now(),
-    status: 'ACTIVE',
+    status: 'PENDING_APPROVAL',
     items: [...requisitionCart],
     selfiePhoto: borrowCamera.photoDataUrl,
     signature: sigDataUrl,
@@ -1087,7 +1145,7 @@ async function executeBorrowConfirm() {
   saveActiveLoans();
 
   // Dispatch to Google Apps Script Cloud Backend (Google Sheets Central Database + Google Drive Selfie Storage)
-  sendToGoogleAppsScript({
+  const gasResult = await sendToGoogleAppsScript({
     action: 'borrow',
     loanId: newLoan.loanId,
     borrowerName: newLoan.borrowerName,
@@ -1108,7 +1166,7 @@ async function executeBorrowConfirm() {
     .map((it, idx) => `${idx + 1}. ${it.name} (${it.item_code}) x ${it.requestedQty} ${it.unit}`)
     .join('\n');
 
-  sendTelegramAlert({
+  const telegramResult = await sendTelegramAlert({
     photoDataUrl: newLoan.selfiePhoto,
     title: '🔔 [พัสดุปกครอง วพอ.] มีรายการขอยืมพัสดุใหม่ 📦',
     lines: {
@@ -1123,6 +1181,15 @@ async function executeBorrowConfirm() {
     note: '✍️ <i>ผู้ขอยืมได้ลงลายมือชื่อดิจิทัลและถ่ายภาพตนเองยืนยันเรียบร้อยแล้ว</i>\n⚡ <b>กรุณาตรวจสอบและอนุมัติภารกิจในระบบ</b>'
   });
 
+  if (telegramResult?.ok) {
+    showToast('บันทึกคำขอแล้ว และส่งแจ้งเตือน Telegram สำเร็จ');
+  } else {
+    showToast(`บันทึกคำขอแล้ว แต่ส่ง Telegram ไม่สำเร็จ: ${telegramResult?.description || telegramResult?.error || 'ตรวจสอบ Token และ Chat ID'}`);
+  }
+  if (gasResult && gasResult.success !== true) {
+    console.error('Borrow was not synced to Google Apps Script:', gasResult);
+  }
+
   // Open Official Printable Loan Slip
   openPrintableLoanSlip(newLoan);
 
@@ -1133,6 +1200,41 @@ async function executeBorrowConfirm() {
   closeBorrowModal();
   updateActiveLoanBadge();
   showToast('บันทึกการขอยืมพัสดุเรียบร้อยแล้ว!');
+}
+
+async function approveLoan(loanId) {
+  const loan = activeLoansList.find(x => x.loanId === loanId && x.status === 'PENDING_APPROVAL');
+  if (!loan) {
+    alert('ไม่พบคำขอที่รออนุมัติ');
+    return;
+  }
+
+  loan.status = 'ACTIVE';
+  loan.approvedAt = new Date().toISOString();
+  saveActiveLoans();
+
+  const gasResult = await sendToGoogleAppsScript({
+    action: 'approve',
+    loanId: loan.loanId,
+    approvedAt: loan.approvedAt,
+    telegramToken: localStorage.getItem('rtafnc_telegram_bot_token') || '',
+    telegramChatId: localStorage.getItem('rtafnc_telegram_chat_id') || ''
+  });
+  const telegramResult = await sendTelegramAlert({
+    title: '✅ [พัสดุปกครอง วพอ.] อนุมัติคำขอยืมแล้ว',
+    lines: {
+      'เลขที่รายการ': loan.loanId,
+      'ผู้ขอยืม': loan.borrowerName,
+      'สถานะ': 'อนุมัติแล้ว สามารถจ่ายพัสดุได้'
+    },
+    note: '⚡ <b>กรุณาดำเนินการจ่ายพัสดุตามรายการ</b>'
+  });
+
+  renderActiveLoansList(document.getElementById('filterReturnLoansInput')?.value || '');
+  showToast(telegramResult?.ok ? 'อนุมัติรายการและแจ้ง Telegram แล้ว' : 'อนุมัติรายการแล้ว แต่แจ้ง Telegram ไม่สำเร็จ');
+  if (gasResult && gasResult.success !== true) {
+    console.error('Approval was not synced to Google Apps Script:', gasResult);
+  }
 }
 
 // ==========================================================================
@@ -1157,12 +1259,15 @@ function cancelReturnSelection() {
   document.getElementById('activeLoansStage').style.display = 'block';
   document.getElementById('returnFormStage').style.display = 'none';
   if (returnCamera) returnCamera.stop();
-  returnSigPad.clear();
+  if (returnSigPad) returnSigPad.clear();
 }
 
 function selectLoanToReturn(loanId) {
-  const loan = activeLoansList.find(x => x.loanId === loanId);
-  if (!loan) return;
+  const loan = activeLoansList.find(x => x.loanId === loanId && x.status === 'ACTIVE');
+  if (!loan || !Array.isArray(loan.items) || loan.items.length === 0) {
+    alert('ไม่พบข้อมูลรายการยืมที่กำลังยืมอยู่หรือรายการพัสดุไม่ครบถ้วน');
+    return;
+  }
 
   currentlyReturningLoanId = loanId;
   document.getElementById('activeLoansStage').style.display = 'none';
@@ -1182,12 +1287,17 @@ function selectLoanToReturn(loanId) {
   }
 
   // Reset return signature & start camera
-  returnSigPad.clear();
-  returnCamera.start();
+  if (returnSigPad) returnSigPad.clear();
+  if (returnCamera) returnCamera.start();
 }
 
 async function executeReturnConfirm() {
-  const loan = activeLoansList.find(x => x.loanId === currentlyReturningLoanId);
+  const loan = activeLoansList.find(x =>
+    x.loanId === currentlyReturningLoanId &&
+    x.status === 'ACTIVE' &&
+    Array.isArray(x.items) &&
+    x.items.length > 0
+  );
   if (!loan) {
     alert('ไม่พบข้อมูลรายการยืมที่เลือก');
     return;
@@ -1214,7 +1324,7 @@ async function executeReturnConfirm() {
   }
 
   // 4. Validate Return Signature
-  if (!returnSigPad.hasDrawn) {
+  if (!returnSigPad || !returnSigPad.hasDrawn) {
     alert('⚠️ กรุณาลงลายมือชื่อผู้ส่งคืนในกรอบให้เรียบร้อย');
     return;
   }
@@ -1240,7 +1350,7 @@ async function executeReturnConfirm() {
   saveActiveLoans();
 
   // Dispatch return to Google Apps Script Cloud Backend (Google Sheets update + Drive Selfie)
-  sendToGoogleAppsScript({
+  const gasResult = await sendToGoogleAppsScript({
     action: 'return',
     loanId: loan.loanId,
     returnerName: returnerName,
@@ -1258,7 +1368,7 @@ async function executeReturnConfirm() {
   showToast('กำลังอัปเดต Google Sheets และส่งแจ้งเตือน Telegram...');
   const returnedItemsSummary = loan.items.map((it, idx) => `${idx + 1}. ${it.name} (${it.item_code}) x ${it.requestedQty} ${it.unit}`).join('\n');
 
-  sendTelegramAlert({
+  const telegramResult = await sendTelegramAlert({
     photoDataUrl: loan.returnRecord.selfiePhoto,
     title: '✅ [พัสดุปกครอง วพอ.] ได้รับคืนพัสดุเรียบร้อยแล้ว 🔄',
     lines: {
@@ -1279,7 +1389,10 @@ async function executeReturnConfirm() {
   // Close and refresh
   closeReturnModal();
   updateActiveLoanBadge();
-  showToast('บันทึกการส่งคืนพัสดุเรียบร้อยแล้ว!');
+  showToast(telegramResult?.ok ? 'บันทึกการส่งคืนและแจ้ง Telegram แล้ว!' : 'บันทึกการส่งคืนแล้ว แต่แจ้ง Telegram ไม่สำเร็จ');
+  if (gasResult && gasResult.success !== true) {
+    console.error('Return was not synced to Google Apps Script:', gasResult);
+  }
 }
 
 // ==========================================================================
@@ -1289,7 +1402,10 @@ function loadActiveLoans() {
   try {
     const raw = localStorage.getItem('rtafnc_supplies_active_loans');
     if (raw) {
-      activeLoansList = JSON.parse(raw);
+      const parsed = JSON.parse(raw);
+      activeLoansList = Array.isArray(parsed)
+        ? parsed.filter(loan => loan && typeof loan === 'object' && loan.loanId && loan.status)
+        : [];
     }
   } catch (err) {
     console.warn('Error loading active loans:', err);
@@ -1308,7 +1424,9 @@ function saveActiveLoans() {
 }
 
 function updateActiveLoanBadge() {
-  const activeCount = activeLoansList.filter(x => x.status === 'ACTIVE').length;
+  const activeCount = activeLoansList.filter(x =>
+    x.status === 'ACTIVE' && Array.isArray(x.items) && x.items.length > 0
+  ).length;
   const badge = document.getElementById('activeLoanBadge');
   if (badge) {
     badge.textContent = activeCount;
@@ -1320,7 +1438,10 @@ function renderActiveLoansList(searchQuery = '') {
   const container = document.getElementById('activeLoansListContainer');
   if (!container) return;
 
-  const activeLoans = activeLoansList.filter(x => x.status === 'ACTIVE');
+  const activeLoans = activeLoansList.filter(x =>
+    (x.status === 'ACTIVE' || x.status === 'PENDING_APPROVAL') &&
+    Array.isArray(x.items)
+  );
   const q = (searchQuery || '').trim().toLowerCase();
 
   const filtered = activeLoans.filter(loan => {
@@ -1345,8 +1466,13 @@ function renderActiveLoansList(searchQuery = '') {
 
   let html = '';
   filtered.forEach(loan => {
-    const itemsSummary = loan.items.map(it => `${it.name} (${it.requestedQty} ${it.unit})`).join(', ');
+    const itemsSummary = loan.items.map(it => `${it.name || 'ไม่ระบุรายการ'} (${it.requestedQty || 0} ${it.unit || 'หน่วย'})`).join(', ');
     const selfieSrc = loan.selfiePhoto || 'images/logo_rtafnc.png';
+
+    const isPending = loan.status === 'PENDING_APPROVAL';
+    const actionButton = isPending
+      ? `<button class="btn-interactive btn-gold" style="padding: 0.55rem 0.9rem; font-size: 0.85rem; flex-shrink: 0;" onclick="approveLoan('${loan.loanId}')"><span>✅ อนุมัติ</span></button>`
+      : `<button class="btn-interactive btn-emerald" style="padding: 0.55rem 0.9rem; font-size: 0.85rem; flex-shrink: 0;" onclick="selectLoanToReturn('${loan.loanId}')"><span>🔄 ส่งคืนรายการนี้</span></button>`;
 
     html += `
       <div class="active-loan-card">
@@ -1358,12 +1484,11 @@ function renderActiveLoansList(searchQuery = '') {
           </div>
           <p style="font-size: 0.8rem; color: #0284C7; font-weight: 600; margin: 0 0 0.2rem 0;">📦 ${itemsSummary}</p>
           <div style="font-size: 0.74rem; color: #64748B;">
+            <span style="color: ${isPending ? '#C59B27' : '#64748B'}; font-weight: 600;">${isPending ? '⏳ รออนุมัติ' : '✅ อนุมัติแล้ว'}</span> |
             <span>📅 ยืมเมื่อ: ${loan.borrowDate}</span> | <span style="color: #C59B27; font-weight: 600;">กำหนดคืน: ${loan.dueDate || '-'}</span>
           </div>
         </div>
-        <button class="btn-interactive btn-emerald" style="padding: 0.55rem 0.9rem; font-size: 0.85rem; flex-shrink: 0;" onclick="selectLoanToReturn('${loan.loanId}')">
-          <span>🔄 ส่งคืนรายการนี้</span>
-        </button>
+        ${actionButton}
       </div>
     `;
   });
@@ -1418,6 +1543,9 @@ async function testTelegramAlert() {
   if (gasUrl) {
     try {
       const resp = await fetch(gasUrl + '?action=initDatabase');
+      if (!resp.ok) {
+        throw new Error(`HTTP ${resp.status}`);
+      }
       const data = await resp.json();
       if (data && data.success) {
         results.push('✅ Google Sheets Central Database: เชื่อมต่อสำเร็จ ๑๐๐%');
@@ -1460,7 +1588,11 @@ async function testTelegramAlert() {
 function updateTelegramIndicator() {
   const dot = document.getElementById('telegramStatusDot');
   if (dot) {
-    dot.style.background = '#10B981';
+    const isConfigured = Boolean(
+      localStorage.getItem('rtafnc_telegram_bot_token') &&
+      localStorage.getItem('rtafnc_telegram_chat_id')
+    );
+    dot.style.background = isConfigured ? '#10B981' : '#94A3B8';
   }
 }
 
@@ -1746,4 +1878,3 @@ function openPrintableReturnSlip(loan) {
 </html>`);
   printWindow.document.close();
 }
-

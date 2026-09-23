@@ -81,6 +81,9 @@ function doPost(e) {
     if (action === "borrow") {
       var borrowResult = handleBorrowRecord(postData);
       return createJsonResponse(borrowResult);
+    } else if (action === "approve") {
+      var approveResult = handleApproveRecord(postData);
+      return createJsonResponse(approveResult);
     } else if (action === "return") {
       var returnResult = handleReturnRecord(postData);
       return createJsonResponse(returnResult);
@@ -130,7 +133,7 @@ function handleBorrowRecord(data) {
   var rowData = [
     data.borrowDate || new Date().toLocaleString("th-TH"),
     data.loanId,
-    "กำลังยืม", // สถานะ
+    "รออนุมัติ", // สถานะ
     data.borrowerName,
     "'" + data.borrowerCode7,
     data.purpose || "การฝึกทางทหารและภารกิจ วพอ.",
@@ -172,6 +175,28 @@ function handleBorrowRecord(data) {
     loanId: data.loanId,
     photoUrl: photoUrl
   };
+}
+
+/**
+ * อัปเดตคำขอยืมเป็นอนุมัติแล้ว
+ */
+function handleApproveRecord(data) {
+  var ss = getSpreadsheet();
+  var sheet = ss.getSheetByName("ประวัติการยืม_คืน");
+  if (!sheet) return { success: false, error: "Sheet not found" };
+
+  var values = sheet.getDataRange().getValues();
+  for (var r = 1; r < values.length; r++) {
+    if (values[r][1] == data.loanId) {
+      if (values[r][2] !== "รออนุมัติ") {
+        return { success: false, error: "Loan is not pending approval: " + data.loanId };
+      }
+      sheet.getRange(r + 1, 3).setValue("กำลังยืม");
+      return { success: true, loanId: data.loanId };
+    }
+  }
+
+  return { success: false, error: "Loan ID not found: " + data.loanId };
 }
 
 /**
